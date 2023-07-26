@@ -1,0 +1,80 @@
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: 'FEF9CBA7B05518AD92681D10735B9785',
+    participant: undefined
+  },
+  messageTimestamp: 1689898015,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: 'Hola',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: 'Hola',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: 'C654A426CB6AF438511E7FF74037C27C',
+    participant: undefined
+  },
+  messageTimestamp: 1689898029,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: 'Hola',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: 'Hola',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: '48B7558308DFD62181E1A81B48703A8B',
+    participant: undefined
+  },
+  messageTimestamp: 1689898034,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '3',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '3',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: '9CCD7AFC48D5897B768A62F26AF7CAB3',
+    participant: undefined
+  },
+  messageTimestamp: 1689898038,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '1',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '1',
+  from: '584126826027'
+}

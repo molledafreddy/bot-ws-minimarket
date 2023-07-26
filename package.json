@@ -1,0 +1,31 @@
+{
+    "name": "base-bailey-mongo",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && npm run  copy.lib base-baileys-mongo",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "@adiwajshing/baileys": "github:WhiskeySockets/Baileys",
+        "@adiwajshing/keyed-db": "^0.2.4",
+        "@bot-whatsapp/bot": "^0.1.29",
+        "@bot-whatsapp/cli": "^0.1.29",
+        "@bot-whatsapp/database": "^0.1.29",
+        "@bot-whatsapp/portal": "^0.1.29",
+        "@bot-whatsapp/provider": "^0.1.29",
+        "axios": "^1.4.0",
+        "bcrypt-nodejs": "^0.0.3",
+        "mime-types": "2.1.35",
+        "mongodb": "^4.12.1",
+        "mongoose": "^7.2.4",
+        "nanoid": "^4.0.2",
+        "nodemon": "^2.0.22",
+        "wa-sticker-formatter": "4.3.2",
+        "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#fix-buttons-list"
+    },
+    "author": "",
+    "license": "ISC"
+}
