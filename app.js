@@ -11,8 +11,10 @@ require("dotenv").config();
 /**
  * Declaramos las conexiones de Mongo
  */
-const MONGO_DB_URI = process.env.MONGO_DB_URI;
-const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
+// const MONGO_DB_URI = process.env.MONGO_DB_URI;
+// const MONGO_DB_NAME = process.env.MONGO_DB_NAME;
+const MONGO_DB_URI = "mongodb+srv://molledafreddy:freddy2..@cluster0.1e16p.mongodb.net";
+const MONGO_DB_NAME = 'db_bot';
 
 const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
  .addAnswer(
@@ -146,9 +148,9 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return await gotoFlow(flowCategory)
         }
-        const valid = await validSelectProducts(ctx.body);
+        const valid = await service.validSelectProducts(ctx.body);
         if (!valid) {
-            await flowDynamic(await addproducts(ctx.body))
+            await flowDynamic(await service.addproducts(ctx.body))
             return await gotoFlow(flowValidSelectProd)
         }
 
@@ -186,10 +188,10 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             return await gotoFlow(flowPrincipal)
         }
         
-        let valid = await validSelectPromotion(ctx.body);
+        let valid = await service.validSelectPromotion(ctx.body);
         if (!valid) {
             // console.log('ingreso al if negado', valid)
-            await flowDynamic( await addPromotions(ctx.body))
+            await flowDynamic( await service.addPromotions(ctx.body))
         }
         if (valid) {
             return fallBack({body: '❌ Debe indicar los pproductos y cantidad con una estructura valida'});
@@ -208,7 +210,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         console.log('llego por aca flowValidSelectPromotion')
             if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
 
-            if (ctx.body == 1) { return await flowDynamic(await listProductSelected())}
+            if (ctx.body == 1) { return await flowDynamic(await service.listProductSelected())}
             
             if(ctx.body == 2){ 
                 service.cleanData();

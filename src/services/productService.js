@@ -40,6 +40,19 @@ const cleanData = async () => {
 /**
  * Conexion servicio API Categorias
  */
+ const getProducts = async (idCategory, clasification) => {
+    
+    const extend = 'product';
+    // console.log('url', `${url}/${extend}/${idCategory}/${clasification}`)
+    return await axios.get(
+        `${URL}/${extend}/${idCategory}/${clasification}`,
+        // { headers: {"Authorization" : `Bearer ${token}`} }
+    );
+}
+
+/**
+ * Conexion servicio API Categorias
+ */
  const getCategory = async () => {
     
     const extend = 'product/category'
