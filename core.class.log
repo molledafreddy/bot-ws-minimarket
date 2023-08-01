@@ -1,0 +1,140 @@
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: 'C75EA47110689DE7E1C8B8532221B5C5',
+    participant: undefined
+  },
+  messageTimestamp: 1690848385,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: 'Hola',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: 'Hola',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: '21F9BD317303A76DD84E24DB0D5BB43D',
+    participant: undefined
+  },
+  messageTimestamp: 1690848390,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '3',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '3',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: 'DF4DFCAFD661F5C9D96D94371388D601',
+    participant: undefined
+  },
+  messageTimestamp: 1690848404,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '1',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '1',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: '37B557686D25CC8D56899F83A4F03882',
+    participant: undefined
+  },
+  messageTimestamp: 1690848408,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '1:4',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '1:4',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: 'C79975EDBC12F4B00622FFDB4A8E47A5',
+    participant: undefined
+  },
+  messageTimestamp: 1690848412,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '1',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '1',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: '198C36638343DC770A86C46336195D3C',
+    participant: undefined
+  },
+  messageTimestamp: 1690848417,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '1',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '1',
+  from: '584126826027'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '584126826027@s.whatsapp.net',
+    fromMe: false,
+    id: 'CAE216582F3609DF53E3E290848FC70D',
+    participant: undefined
+  },
+  messageTimestamp: 1690848435,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: 'Calle Carabobo con maparari',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: 'Calle Carabobo con maparari',
+  from: '584126826027'
+}

@@ -1,6 +1,7 @@
 
 const axios = require('axios');
 require("dotenv").config();
+const flowAgenteNotification = require('../flows/flowAgenteNotification')
 
 const URL = process.env.URL;
 const limit = 5
@@ -73,7 +74,7 @@ const category = async ()  => {
         data.push("*Categorias Disponibles*");
         data.push("\n*Indique el numero de la categoria de su interes*")
         let contador = 1
-        
+        console.log('llego a la lista de categorias')
         categories.data.forEach(c => {
             // console.log('contador', c)
             if (c._id !== '64adedb4035179d0b5492fe1') {
@@ -220,7 +221,7 @@ const validSelectProducts = async (selected)  => {
 /**
  * Metodo que permite guardar un delivery
  */
-const saveOrder = async (ctx)  => {
+const saveOrder = async (ctx, provider)  => {
     let dataProducts = {
         products: [],
         address: "",
@@ -231,6 +232,10 @@ const saveOrder = async (ctx)  => {
     };
 
     let data = [];
+    let dataMessage = [];
+    dataMessage.push(`* 🛒 Se Registro un nuevo pedido con la siguiente informacion: 🛒* \n`);
+    dataMessage.push(`*Nombre Cliente:* ${ctx?.pushName} \n *Telefono:* +${ctx?.from} \n`);
+    dataMessage.push(`* Direccion:* ${ctx?.message?.conversation} \n`);
     contaninerProductos?.forEach(c => {
         if (c.quantity > 0) {
             dataProducts.products.push({
@@ -240,6 +245,7 @@ const saveOrder = async (ctx)  => {
                 "category": c.category,
                 "quantity": c.quantity
             });
+            dataMessage.push(` *Nombre:* ${c.name} *Precio:* ${c.price} *Cantidad:* ${c.quantity} \n`);
         }
     });
 
@@ -248,9 +254,11 @@ const saveOrder = async (ctx)  => {
     dataProducts.longitude = ctx?.message?.locationMessage?.degreesLongitude;
     dataProducts.phone = ctx?.from;
     dataProducts.nameClient = ctx?.pushName;
-    data.push(`\n🙌Su pedido fue exitoso, le contactara un operador para Validar El Pedido🙌`);
     
     postDelivery(dataProducts);
+    data.push(`🥳 🛒Su pedido fue Exitoso, sera contactado un operador para validar la informacion suministrada 🛒 🥳`);
+    data.push(`Si requiere realizar un cambio del pedido lo podra hacer cuando se comunique con el Agente.`);
+    provider.sendText('56936499908@s.whatsapp.net', dataMessage.toString());
     return {body: `${data}`}
 }
 
@@ -260,7 +268,7 @@ const saveOrder = async (ctx)  => {
 const getPromotion = async (selected)  => {
     const products = await getProducts("64adedb4035179d0b5492fe1", "promotion");
     let data= [];
-    data.push("Promociones Disponibles");
+    // data.push("Promociones Disponibles");
     let counter = 1
     lastContainerPromotions = [];
     products?.data.forEach(c => {
