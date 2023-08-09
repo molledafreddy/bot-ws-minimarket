@@ -33,7 +33,7 @@ const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
  );
 
  
- const flowLisSelectProducts = addKeyword(['2', 'Resumen Compras', , 'resumen compras'])
+ const flowLisSelectProducts = addKeyword(['Resumen Compras'])
  .addAnswer(
     [
         'Opciones disponibles para avanzar:\n',
@@ -43,11 +43,15 @@ const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
     ],
      { capture: true},
      async(ctx, {flowDynamic, fallBack, endFlow, gotoFlow}) => {
+        console.log(' flowLisSelectProducts llego por aca')
         if (ctx.body == 0) {
-            await gotoFlow(flowPrincipal)
+           return  await gotoFlow(flowPrincipal)
         }
         
-        if (ctx.body == 1) { await gotoFlow(flowEndShoppingCart)}
+        if (ctx.body == 1) { 
+            console.log(' Concretar Compra  Concretar Compra')
+            return await gotoFlow(flowEndShoppingCart)
+        }
         
         if(ctx.body == 2){ return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) }
 
@@ -70,7 +74,8 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
     [
         'Procesamos su seleccion, indique El numero de su siguiente paso:.\n',
         '👉 #1  Resumen compras', 
-        '👉 #2  Cancelar Compra', 
+        '👉 #2  Cancelar Compra',
+        '👉 #3  Eliminar Productos', 
         '👉 #0  Menu principal\n',
     ],
     { capture: true },
@@ -78,7 +83,8 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             if (ctx.body == 0) { await gotoFlow(flowPrincipal) }
 
             if (ctx.body == 1) { 
-                await flowDynamic(await service.listProductSelected())
+                await flowDynamic(await service.listProductSelected());
+                return await gotoFlow(flowLisSelectProducts);
             }
             
             if(ctx.body == 2){ 
@@ -86,13 +92,20 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
                 return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) 
             }
 
-            if (![0, 1, 2].includes(parseInt(ctx.body.toLowerCase().trim()))) {
+            if (ctx.body == 3) { 
+                await flowDynamic(await service.listProductSelected());
+                return await gotoFlow(flowValidPromotionDelete);
+            }
+
+            if (![0, 1, 3].includes(parseInt(ctx.body.toLowerCase().trim()))) {
                 return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
             }
          
      },
-    [flowLisSelectProducts]
- )
+    // [flowLisSelectProducts]
+ );
+
+
 
  const flowValidSelectProd = addKeyword('select')
  .addAnswer(
@@ -100,13 +113,14 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         '*Procesamos su seleccion, indique El numero de su siguiente paso:*\n',
         '👉 #1  Resumen compras', 
         '👉 #2  Categorias',
-        '👉 #3  Cancelar Compra', 
+        '👉 #3  Eliminar Productos',
+        '👉 #4  Cancelar Compra', 
         '👉 #0  Menu principal\n',
     ],
     { capture: true},
     async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
         if (ctx.body == 0) {
-            return await gotoFlow(flowPrincipal)
+            return await gotoFlow(flowPrincipal);
         }
         
         if (ctx.body == 1) {
@@ -119,38 +133,133 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             return await gotoFlow(flowCategory);
         }
 
-        if(ctx.body == 3){
+        if (ctx.body == 3) { 
+            await flowDynamic(await service.listProductSelected())
+            return await gotoFlow(flowValidProductDelete)
+        }
+
+        if(ctx.body == 4){
             service.cleanData();
             return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'});
         }
         if (![0, 1, 2, 3].includes(parseInt(ctx.body.toLowerCase().trim()))) {
-            return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
+            return fallBack({body: "*Opcion no valida*, por favor ingrese una opcion valida."});
         }
      },
  );
 
+ const flowValidProductDelete = addKeyword('deleteproducts')
+ .addAnswer(
+    [
+        'Indique los Codigos de los *Productos* que desee eliminar, separados por una coma',
+        'Ejemplo: 1,3,5',
+        'Digite la palabra *Volver* para ir al menu anterior',
+    ],
+    { capture: true},
+    async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+        if (ctx.body.toLowerCase().trim() == 'volver' ) {
+            return await gotoFlow(flowPrincipal)
+        }
+
+        const valid = await service.validSelectProductDelete(ctx.body);
+        if (!valid) {
+            console.log('validacion validSelectProductDelete ', valid)
+
+            await flowDynamic(await service.deleteProducts(ctx.body, 'products'));
+
+            const resultvalidListP = await service.validListProducts();
+            console.log('validacion resultvalidList ', resultvalidListP)
+            if (!resultvalidListP) {
+                console.log('ingreso al if')
+                // return await gotoFlow(FlowMenuPromocion);
+                await flowDynamic(await service.category());
+                return await gotoFlow(flowCategory);
+            } else {
+                // await flowDynamic(await service.getPromotion(ctx.body));
+                // return await gotoFlow(flowPromotion);
+                return await gotoFlow(flowValidSelectProd)
+            }
+            
+        }
+        
+        return fallBack({body: '❌ Debe indicar el codigo del producto que desea eliminar con una estructura valida Ejemplo 1,2,3'});
+        
+        
+     },
+ );
+
+ const flowValidPromotionDelete = addKeyword('deletepromotion')
+ .addAnswer(
+    [
+        'Indique los Codigos de las *Promociones* que desee eliminar, separados por una coma',
+        'Ejemplo: 1,3,5',
+        '\nIngrese la palabra *Volver* para ir al menu anterior',
+    ],
+    { capture: true},
+    async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+        if (ctx.body.toLowerCase().trim() == 'volver' ) {
+            return await gotoFlow(flowPrincipal)
+        }
+
+        const valid = await service.validSelectProductDelete(ctx.body);
+        if (!valid) {
+            // console.log('validacion validSelectProductDelete ', valid)
+
+            await flowDynamic(await service.deleteProducts(ctx.body, 'promotion'));
+            const resultvalidList = await service.validListProducts();
+            console.log('validacion resultvalidList ', resultvalidList)
+            if (resultvalidList) {
+                return await gotoFlow(FlowMenuPromocion);
+            } else {
+                await flowDynamic(await service.getPromotion(ctx.body));
+                return await gotoFlow(flowPromotion);
+            }
+            
+        }
+        // console.log('ctx.body.toLowerCase().trim() ', ctx.body.toLowerCase().trim())
+        // if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
+        //     return await gotoFlow(flowCategory)
+        // }
+
+        return fallBack({body: '❌ Debe indicar el codigo del producto que desea eliminar con una estructura valida Ejemplo 1,2,3'});
+        
+        
+     },
+ );
+
+ 
  const flowLisCategoryLacteos = addKeyword('Lacteos')
  .addAnswer(
     [
         'Indique los Numeros de los productos que desee y la cantidad, separados por una coma',
         'Ejemplo: 1:2,2:1,3:4',
-        'Para *volver* a las categorias digite *0*',
+        '\nIngrese la palabra *volver* para ir a la lista de categorias',
     ],
     { capture: true},
     async(ctx, {gotoFlow, flowDynamic, fallBack}) => {
+        if (ctx.body.toLowerCase().trim() == 'volver' ) {
+            await flowDynamic(await service.category());
+            return await gotoFlow(flowCategory);
+        }
         
         const valid = await service.validSelectProducts(ctx.body);
-        console.log('validacion categorias ', valid)
+        if (valid) {
+            console.log('validacion categorias ', valid)
+            return fallBack({body: '❌ Debe indicar el numero de producto y cantidad con una estructura valida Ejemplo 1:3,2:4'});
+            // return fallBack();
+        }
         if (!valid) {
-            await flowDynamic(await service.addproducts(ctx.body))
-            return await gotoFlow(flowValidSelectProd)
-        }
-        console.log('ctx.body.toLowerCase().trim() ', ctx.body.toLowerCase().trim())
-        if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
-            return await gotoFlow(flowCategory)
-        }
+            await flowDynamic(await service.addproducts(ctx.body));
+            return await gotoFlow(flowValidSelectProd);
+        } 
+        
+        
+        //  console.log('ctx.body.toLowerCase().trim() ', ctx.body.toLowerCase().trim())
+        // if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
+        //     return await gotoFlow(flowCategory)
+        // }
 
-        return fallBack({body: '❌ Debe indicar el numero de producto y cantidad con una estructura valida Ejemplo 1:3,2:4'});
+        
      }
     )
  
@@ -165,9 +274,10 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         const validCategory = await service.validSelectCategory(ctx.body);
         if (validCategory) {
             return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
+        } else {
+            await flowDynamic(await service.product(ctx.body));
+            return await gotoFlow(flowLisCategoryLacteos);
         }
-        await flowDynamic(await service.product(ctx.body));
-        return await gotoFlow(flowLisCategoryLacteos);
     },
 //    [flowLisCategoryLacteos]
 );
@@ -187,18 +297,25 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         let valid = await service.validSelectPromotion(ctx.body);
         if (!valid) {
             // console.log('ingreso al if negado', valid)
-            await flowDynamic( await service.addPromotions(ctx.body))
+            await flowDynamic( await service.addPromotions(ctx.body));
+            return await gotoFlow(FlowMenuPromocion)
         }
         if (valid) {
             return fallBack({body: '❌ Debe indicar las promociones y cantidad con una estructura valida.'});
         }
          
      },
- ).addAnswer(
+ )
+ 
+ 
+
+const FlowMenuPromocion = addKeyword(['MenuPromocion'])
+ .addAnswer(
     [
-        'Seleccione una opcion para avanzar:\n',
-        '👉 #1  Resumen compras', 
-        '👉 #2  Cancelar Compra',
+        'Seleccione una opcion para avanzarss:\n',
+        '👉 #1  Resumen Compras',
+        '👉 #2  Eliminar Productos', 
+        '👉 #3  Cancelar Compra',
         '👉 #0  Menu principal\n',  
     ],
     { capture: true },
@@ -206,9 +323,17 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         console.log('llego por aca flowValidSelectPromotion')
             if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
 
-            if (ctx.body == 1) { return await flowDynamic(await service.listProductSelected())}
+            if (ctx.body == 1) { 
+                await flowDynamic(await service.listProductSelected());
+                return await gotoFlow(flowLisSelectProducts);
+            }
+
+            if (ctx.body == 2) { 
+                await flowDynamic(await service.listProductSelected())
+                return await gotoFlow(flowValidPromotionDelete)
+            }
             
-            if(ctx.body == 2){ 
+            if(ctx.body == 3){ 
                 service.cleanData();
                 return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) 
             }
@@ -217,8 +342,8 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             }
          
      },
-    [flowLisSelectProducts]
- )
+    // [flowLisSelectProducts]
+ );
 
  const FlowAgente = addKeyword(['4', 'Agente', 'AGENTE'])
  .addAnswer(["*Estamos desviando tu conversacion a nuestro Agente*"], null,
@@ -281,26 +406,25 @@ const flowPrincipal = addKeyword(EVENTS.WELCOME)
      [
         '*Indica el Número de la opción que desees:*', 
         '👉 #1 Promociones', 
-        '👉 #2 Link Carrito de compra', 
+        '👉 #2 Link Carrito de compra Web', 
         '👉 #3 Carrito de compra whatsApp',
         '👉 #4 Conversar con un Agente'
     ],
     { capture: true },
      async (ctx,{gotoFlow, flowDynamic, fallBack}) => {
-        console.log('captura datos flowPrincipal', ctx.body.toLowerCase().trim())
         if (ctx.body === "1") {
-            await flowDynamic(await service.getPromotion(ctx.body))
+            await flowDynamic(await service.getPromotion(ctx.body));
+            return await gotoFlow(flowPromotion); 
         }
          if (ctx.body === "3") {
-            // console.log('ingreso al if', ctx.body)
             await flowDynamic(await service.category());
-            return await gotoFlow(flowCategory)
+            return await gotoFlow(flowCategory);
          }
         if (![1, 2, 3, 4].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
         }
      },
-    [flowPromotion, flowLink, FlowAgente2]
+    [flowLink, FlowAgente2]
  )
 
 const main = async () => {
@@ -311,13 +435,16 @@ const main = async () => {
     const adapterFlow = createFlow([
         flowPrincipal, 
         flowLisCategoryLacteos, 
+        flowLisSelectProducts,
         flowValidSelectProd,
         flowEndShoppingCart,
-        flowCategory
-    ])
-    // const adapterFlow = createFlow([flowvCard, opt1, opt2,opt3,opt4])
-    // const adapterFlow = createFlow([flowPrincipalVenta])
-    // const adapterFlow = createFlow([flowEndS])
+        flowCategory,
+        flowValidSelectProd,
+        FlowMenuPromocion,
+        flowValidPromotionDelete,
+        flowValidProductDelete,
+        flowPromotion
+    ]);
     
     const adapterProvider = createProvider(BaileysProvider)
     createBot({

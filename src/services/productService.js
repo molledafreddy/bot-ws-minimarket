@@ -32,23 +32,35 @@ const cleanData = async () => {
  * Conexion servicio API Crear un Pedido (Delivery)
  */
  const postDelivery = async (body) => {
-    const extend = 'product/delivery'
-    return await axios.post(
-        `${URL}/${extend}?`, body,
-    { headers: {"Authorization" : `Bearer ${token}`} });
+    try {
+        const extend = 'product/delivery'
+        return await axios.post(
+            `${URL}/${extend}?`, body,
+        { headers: {"Authorization" : `Bearer ${token}`} });
+    } catch (error) {
+        console.log('nuevo error', error)
+    }
+   
 }
 
 /**
  * Conexion servicio API Categorias
  */
  const getProducts = async (idCategory, clasification) => {
+
+    try {
+        const extend = 'product';
+        const status = true;
+        // console.log('url', `${url}/${extend}/${idCategory}/${clasification}`)
+        return await axios.get(
+            `${URL}/${extend}/${idCategory}/${clasification}/${status}`,
+            // { headers: {"Authorization" : `Bearer ${token}`} }
+        );    
+    } catch (error) {
+        console.log('genero error', error)
+    }
     
-    const extend = 'product';
-    // console.log('url', `${url}/${extend}/${idCategory}/${clasification}`)
-    return await axios.get(
-        `${URL}/${extend}/${idCategory}/${clasification}`,
-        // { headers: {"Authorization" : `Bearer ${token}`} }
-    );
+    
 }
 
 /**
@@ -56,11 +68,16 @@ const cleanData = async () => {
  */
  const getCategory = async () => {
     
-    const extend = 'product/category'
-    return await axios.get(
-        `${URL}/${extend}`,
-        // { headers: {"Authorization" : `Bearer ${token}`} }
-    );
+    try {
+        const extend = 'product/category'
+        return await axios.get(
+            `${URL}/${extend}`,
+            // { headers: {"Authorization" : `Bearer ${token}`} }
+        );
+    } catch (error) {
+        console.log('error', error)
+    }
+    
 }
 
 /**
@@ -119,6 +136,69 @@ const addproducts = async (selected)  => {
             });
         });
     }
+}
+
+/**
+ * Metodo que permite eliminar productos seleccionados
+ */
+ const deleteProducts = async (selected, type)  => { 
+    let products = selected.split(',');
+    // let containerSelected = [];
+    // let flag = false;
+    // isNaN
+    // const found = products.find(element => element == elementS.numberProduct);
+    // if (found == undefined) {
+    //     flag = true;
+    // }
+    console.log('produc validSelectProductDelete', products)
+    console.log('produc contaninerProductos', contaninerProductos)
+    
+    products.forEach(elementS => {
+        contaninerProductos.forEach(element => {
+            if (element.counter == elementS && element.type === type) {
+                element.quantity = 0;
+            }
+            
+        });
+    });
+    console.log('despues de la validacion', contaninerProductos)
+    return contaninerProductos;
+}
+
+/**
+ * Metodo que permite validar si los datos ingresados para seleccionar la promocion son validos
+ */
+ const validSelectProductDelete = async (selected)  => { 
+    let products = selected.split(',');
+    let containerSelected = [];
+    let flag = false;
+    // isNaN
+    // const found = products.find(element => element == elementS.numberProduct);
+    // if (found == undefined) {
+    //     flag = true;
+    // }
+    // console.log('produc validSelectProductDelete', products)
+    // console.log('produc contaninerProductos', contaninerProductos)
+    products.forEach(element => {
+        if (isNaN(element)) {
+            flag = true;
+        }
+        // console.log('dato element isNaN', element)
+    });
+    return flag;
+}
+
+/**
+ * Metodo que permite validar si los datos ingresados para seleccionar la promocion son validos
+ */
+ const validListProducts = async ()  => { 
+    let flag = false;
+    contaninerProductos.forEach(element => {
+        if (element?.quantity > 0 ) {
+            flag = true;
+        }
+    });
+    return flag;
 }
 
 /**
@@ -290,6 +370,7 @@ const getPromotion = async (selected)  => {
                 "price": c.price,
                 "category": c.categoryProducts[0],
                 "quantity": 0,
+                "type": "promotion",
                 "status": false
             })
         }
@@ -338,6 +419,7 @@ const product = async (selected)  => {
                         "price": c.price,
                         "category": c.categoryProducts[0],
                         "quantity": 0,
+                        "type": "products",
                         "status": false
                     })
                 }
@@ -359,10 +441,10 @@ const listProductSelected = async (selected)  => {
 
     let counter = 1
     let sumProducts = 0;
-    console.log('listProductSelected lelgo')
     contaninerProductos.forEach(c => {
+        // console.log('listProductSelected lelgo', c)
         if (c.quantity != 0) {
-            let value =`👉: ${c.name} Cantidad:${c.quantity}  Precio:${c.price}\n`
+            let value =`👉 #:${counter} Nombre: ${c.name} Cantidad:${c.quantity}  Precio:${c.price}\n`
             data.push(value)
             sumProducts =  ( parseFloat(sumProducts) + (parseFloat(c.price) * parseFloat(c.quantity)))
         }
@@ -403,5 +485,5 @@ const listProductPreSelected = async (selected)  => {
 }
 
 // module.exports = listProductPreSelected,
-module.exports = { cleanData, listProductPreSelected, listProductSelected, product, getPromotion, saveOrder, validSelectProducts, validSelectCategory, postDelivery, getCategory, category, addproducts, validSelectPromotion, addPromotions }
+module.exports = { cleanData, validListProducts, validSelectProductDelete, deleteProducts, listProductPreSelected, listProductSelected, product, getPromotion, saveOrder, validSelectProducts, validSelectCategory, postDelivery, getCategory, category, addproducts, validSelectPromotion, addPromotions }
 // export default sumar;
