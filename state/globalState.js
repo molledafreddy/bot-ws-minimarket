@@ -37,6 +37,7 @@ class GlobalState {
   loadState() {
     if (fs.existsSync('state.json')) {
       const stateData = fs.readFileSync('state.json');
+      console.log('stateDatasssss', stateData)
       return JSON.parse(stateData);
     } else {
       return {}; // Retorna un estado vacío si el archivo no existe

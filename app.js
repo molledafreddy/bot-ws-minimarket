@@ -2,7 +2,8 @@ const { createBot, createProvider, createFlow, addKeyword, addChild, EVENTS, add
 
 const QRPortalWeb = require('@bot-whatsapp/portal')
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
-const MongoAdapter = require('@bot-whatsapp/database/mongo')
+const MongoAdapter = require('@bot-whatsapp/database/mongo');
+const globalState = require('./state/globalState');
 
 var fs = require('fs');
 const service = require('./src/services/productService');
@@ -26,7 +27,7 @@ const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
     async(ctx, {flowDynamic, endFlow, provider}) => {
         if (ctx.body.length > 0) {
             await flowDynamic(await service.saveOrder(ctx, provider))
-            service.cleanData();
+            service.cleanData(ctx);
             return endFlow({body: 'Gracias por su Compra'})
         }
     }
@@ -45,18 +46,21 @@ const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
      async(ctx, {flowDynamic, fallBack, endFlow, gotoFlow}) => {
         console.log(' flowLisSelectProducts llego por aca')
         if (ctx.body == 0) {
-           return  await gotoFlow(flowPrincipal)
+           return  await gotoFlow(flowPrincipal);
         }
         
         if (ctx.body == 1) { 
             console.log(' Concretar Compra  Concretar Compra')
-            return await gotoFlow(flowEndShoppingCart)
+            return await gotoFlow(flowEndShoppingCart);
         }
         
-        if(ctx.body == 2){ return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) }
+        if(ctx.body == 2){ 
+            service.cleanData(ctx);
+            return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) 
+        }
 
         if (![0, 1, 2].includes(parseInt(ctx.body.toLowerCase().trim()))) {
-            service.cleanData();
+            service.cleanData(ctx);
             return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
         }
      },
@@ -83,17 +87,17 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             if (ctx.body == 0) { await gotoFlow(flowPrincipal) }
 
             if (ctx.body == 1) { 
-                await flowDynamic(await service.listProductSelected());
+                await flowDynamic(await service.listProductSelected(ctx));
                 return await gotoFlow(flowLisSelectProducts);
             }
             
             if(ctx.body == 2){ 
-                service.cleanData();
+                service.cleanData(ctx);
                 return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) 
             }
 
             if (ctx.body == 3) { 
-                await flowDynamic(await service.listProductSelected());
+                await flowDynamic(await service.listProductSelected(ctx));
                 return await gotoFlow(flowValidPromotionDelete);
             }
 
@@ -124,22 +128,22 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         }
         
         if (ctx.body == 1) {
-            await flowDynamic(await service.listProductSelected());
+            await flowDynamic(await service.listProductSelected(ctx));
             return await gotoFlow(flowLisSelectProducts);
         }
         
         if (ctx.body == 2) {
-            await flowDynamic(await service.category());
+            await flowDynamic(await service.category(ctx));
             return await gotoFlow(flowCategory);
         }
 
         if (ctx.body == 3) { 
-            await flowDynamic(await service.listProductSelected())
+            await flowDynamic(await service.listProductSelected(ctx))
             return await gotoFlow(flowValidProductDelete)
         }
 
         if(ctx.body == 4){
-            service.cleanData();
+            service.cleanData(ctx);
             return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'});
         }
         if (![0, 1, 2, 3].includes(parseInt(ctx.body.toLowerCase().trim()))) {
@@ -161,22 +165,18 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             return await gotoFlow(flowPrincipal)
         }
 
-        const valid = await service.validSelectProductDelete(ctx.body);
+        const valid = await service.validSelectProductDelete(ctx);
         if (!valid) {
             console.log('validacion validSelectProductDelete ', valid)
 
-            await flowDynamic(await service.deleteProducts(ctx.body, 'products'));
+            await flowDynamic(await service.deleteProducts(ctx, 'products'));
 
-            const resultvalidListP = await service.validListProducts();
+            const resultvalidListP = await service.validListProducts(ctx);
             console.log('validacion resultvalidList ', resultvalidListP)
             if (!resultvalidListP) {
-                console.log('ingreso al if')
-                // return await gotoFlow(FlowMenuPromocion);
-                await flowDynamic(await service.category());
+                await flowDynamic(await service.category(ctx));
                 return await gotoFlow(flowCategory);
             } else {
-                // await flowDynamic(await service.getPromotion(ctx.body));
-                // return await gotoFlow(flowPromotion);
                 return await gotoFlow(flowValidSelectProd)
             }
             
@@ -201,29 +201,21 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             return await gotoFlow(flowPrincipal)
         }
 
-        const valid = await service.validSelectProductDelete(ctx.body);
+        const valid = await service.validSelectProductDelete(ctx);
         if (!valid) {
-            // console.log('validacion validSelectProductDelete ', valid)
-
-            await flowDynamic(await service.deleteProducts(ctx.body, 'promotion'));
-            const resultvalidList = await service.validListProducts();
+            await flowDynamic(await service.deleteProducts(ctx, 'promotion'));
+            const resultvalidList = await service.validListProducts(ctx);
             console.log('validacion resultvalidList ', resultvalidList)
             if (resultvalidList) {
                 return await gotoFlow(FlowMenuPromocion);
             } else {
-                await flowDynamic(await service.getPromotion(ctx.body));
+                await flowDynamic(await service.getPromotion(ctx));
                 return await gotoFlow(flowPromotion);
             }
             
         }
-        // console.log('ctx.body.toLowerCase().trim() ', ctx.body.toLowerCase().trim())
-        // if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
-        //     return await gotoFlow(flowCategory)
-        // }
 
         return fallBack({body: '❌ Debe indicar el codigo del producto que desea eliminar con una estructura valida Ejemplo 1,2,3'});
-        
-        
      },
  );
 
@@ -238,18 +230,18 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
     { capture: true},
     async(ctx, {gotoFlow, flowDynamic, fallBack}) => {
         if (ctx.body.toLowerCase().trim() == 'volver' ) {
-            await flowDynamic(await service.category());
+            await flowDynamic(await service.category(ctx));
             return await gotoFlow(flowCategory);
         }
         
-        const valid = await service.validSelectProducts(ctx.body);
+        const valid = await service.validSelectProducts(ctx);
         if (valid) {
             console.log('validacion categorias ', valid)
             return fallBack({body: '❌ Debe indicar el numero de producto y cantidad con una estructura valida Ejemplo 1:3,2:4'});
             // return fallBack();
         }
         if (!valid) {
-            await flowDynamic(await service.addproducts(ctx.body));
+            await flowDynamic(await service.addproducts(ctx));
             return await gotoFlow(flowValidSelectProd);
         } 
         
@@ -269,13 +261,14 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
     ['Ingrese la categoria'],
     { capture: true },
     async (ctx,{flowDynamic, gotoFlow, fallBack}) => {
-        console.log('llego por aca flowcategory')
+        // console.log('llego por aca flowcategory', ctx)
+        // console.log('llego por aca flowCategory')
         if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
-        const validCategory = await service.validSelectCategory(ctx.body);
+        const validCategory = await service.validSelectCategory(ctx);
         if (validCategory) {
-            return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
+            return fallBack({body: "*Opcion no valida*, \npor favor seleccione una opcion valida."});
         } else {
-            await flowDynamic(await service.product(ctx.body));
+            await flowDynamic(await service.product(ctx));
             return await gotoFlow(flowLisCategoryLacteos);
         }
     },
@@ -294,10 +287,10 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             return await gotoFlow(flowPrincipal)
         }
         
-        let valid = await service.validSelectPromotion(ctx.body);
+        let valid = await service.validSelectPromotion(ctx);
         if (!valid) {
             // console.log('ingreso al if negado', valid)
-            await flowDynamic( await service.addPromotions(ctx.body));
+            await flowDynamic( await service.addPromotions(ctx));
             return await gotoFlow(FlowMenuPromocion)
         }
         if (valid) {
@@ -308,11 +301,10 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
  )
  
  
-
 const FlowMenuPromocion = addKeyword(['MenuPromocion'])
  .addAnswer(
     [
-        'Seleccione una opcion para avanzarss:\n',
+        'Seleccione una opcion para avanzar:\n',
         '👉 #1  Resumen Compras',
         '👉 #2  Eliminar Productos', 
         '👉 #3  Cancelar Compra',
@@ -324,17 +316,17 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
             if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
 
             if (ctx.body == 1) { 
-                await flowDynamic(await service.listProductSelected());
+                await flowDynamic(await service.listProductSelected(ctx));
                 return await gotoFlow(flowLisSelectProducts);
             }
 
             if (ctx.body == 2) { 
-                await flowDynamic(await service.listProductSelected())
+                await flowDynamic(await service.listProductSelected(ctx))
                 return await gotoFlow(flowValidPromotionDelete)
             }
             
             if(ctx.body == 3){ 
-                service.cleanData();
+                service.cleanData(ctx);
                 return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) 
             }
             if (![0, 1, 2].includes(parseInt(ctx.body.toLowerCase().trim()))) {
@@ -354,7 +346,7 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
         await refProvider.groupCreate(`Los Medanos Atencion (${ID_GROUP})`, [
             `${ctx.from}@s.whatsapp.net`
         ])
-        service.cleanData();
+        service.cleanData(ctx);
         return endFlow({body: '*Gracias*'});
     }
 );
@@ -373,7 +365,7 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
     const refProvider = await provider.getInstance();
     // await refProvider.sendMessage(numAgente, {Text: message});
     provider.sendText('56936499908@s.whatsapp.net', message)
-       service.cleanData();
+       service.cleanData(ctx);
        return endFlow({body: '*Gracias*'});
    }
 );
@@ -412,12 +404,16 @@ const flowPrincipal = addKeyword(EVENTS.WELCOME)
     ],
     { capture: true },
      async (ctx,{gotoFlow, flowDynamic, fallBack}) => {
+       
+        globalState.update(ctx.from, { name: ctx.pushName ?? ctx.from });
+        // let dataGlobal = globalState.get(ctx.from);
+        // console.log('ctx flowPrincipal dataGlobal', dataGlobal)
         if (ctx.body === "1") {
-            await flowDynamic(await service.getPromotion(ctx.body));
+            await flowDynamic(await service.getPromotion(ctx));
             return await gotoFlow(flowPromotion); 
         }
          if (ctx.body === "3") {
-            await flowDynamic(await service.category());
+            await flowDynamic(await service.category(ctx));
             return await gotoFlow(flowCategory);
          }
         if (![1, 2, 3, 4].includes(parseInt(ctx.body.toLowerCase().trim()))) {

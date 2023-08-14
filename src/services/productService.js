@@ -1,7 +1,8 @@
 
 const axios = require('axios');
 require("dotenv").config();
-const flowAgenteNotification = require('../flows/flowAgenteNotification')
+const flowAgenteNotification = require('../flows/flowAgenteNotification');
+const globalState = require('../../state/globalState');
 
 const URL = process.env.URL;
 const limit = 5
@@ -10,22 +11,17 @@ const search = '';
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDYyYmQ4M2E2MzY3YTdkMTkxZDEyYTMiLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE2ODY2MTYwNDgsImV4cCI6MTY4NjYyMzI0OH0.79tnt-lxT7jxBPCvMGTqFA16BWDYZZR3YEA1GosqUgc'
 
 
-let contaninerIdCategory = [];
-let contaninerProductos = [];
-let categorySelectActive = [];
-let lastContainerProducts = [];
-let lastContainerPromotions = [];
-
-
 /**
  * Metodo que permite limpiar los contenedores cuando de cancela o termina el flujo.
  */
-const cleanData = async () => {
-    contaninerIdCategory = [];
-    contaninerProductos = [];
-    categorySelectActive = [];
-    lastContainerProducts = [];
-    lastContainerPromotions = [];
+const cleanData = async (ctx) => {
+    globalState.update(ctx.from, {
+        contaninerIdCategory: [],
+        lastContainerProducts:[],
+        contaninerProductos: [],
+        categorySelectActive: {},
+        lastContainerPromotions: []
+    });
 }
 
 /**
@@ -77,58 +73,65 @@ const cleanData = async () => {
     } catch (error) {
         console.log('error', error)
     }
-    
 }
 
 /**
  * Metodo que permite consultar y construir la lista de categorias
  */
-const category = async ()  => {
+const category = async (ctx)  => {
     const categories = await getCategory();
-    // console.log('categoies', categories.data)
      let data= [];
+     let containerCategory = [];
     // const mapDatos = catgories.data.map((c) => ({body: `${c.name}`}))
         data.push("*Categorias Disponibles*");
         data.push("\n*Indique el numero de la categoria de su interes*")
         let contador = 1
-        console.log('llego a la lista de categorias')
         categories.data.forEach(c => {
-            // console.log('contador', c)
             if (c._id !== '64adedb4035179d0b5492fe1') {
                 let value =`\n 👉#: ${contador} ${c.name}`
                 data.push(value)
-                contaninerIdCategory.push({name: c.name, id: c._id, numberCategory: contador});
+                containerCategory.push({name: c.name, id: c._id, numberCategory: contador});
+                
                 value = '';
+                contador++;
             }
-            contador++;
         });
-        data.push(`\n 👉#: 0 Volver al menu Principal`)
-        dataCategory =  {body: `${data}`}
+       
+        globalState.update(ctx.from, {
+            contaninerIdCategory: containerCategory
+        });
+
+        data.push(`\n 👉#: 0 Volver al menu Principal`);
         const cat = {body: `${data}`}
-        // console.log('contaninerIdCategory', contaninerIdCategory)
         return cat;
 }
 
 /**
  * Metodo que permite agregar los productos seleccionados al contenedor
  */
-const addproducts = async (selected)  => { 
-    let products = selected.split(',');
-    // console.log('addproducts produtcs', products)
-    let containerSelected = [];
-    products.forEach(element => {
-        // containerSelected
-        let divider = element.split(':');
-        containerSelected.push({
-            numberProduct: divider[0],
-            quantity: divider[1],
+const addproducts = async (ctx)  => { 
+
+    let productsGlobal = ctx?.body.split(',');
+    let contaninerProductosGlobal = globalState.get(ctx.from)?.contaninerProductos ?? [];
+    let containerSelectedGlobal = [];
+    
+    productsGlobal.forEach(element => {
+        let dividerG = element.split(':');
+        containerSelectedGlobal.push({
+            numberProduct: dividerG[0],
+            quantity: dividerG[1],
         });
     });
 
-    if (containerSelected.length > 0) {
-        containerSelected?.forEach(element => {
-            contaninerProductos?.forEach(elementP => {
-                if (element.numberProduct == elementP.counter && categorySelectActive.id == elementP.category) {
+    if (containerSelectedGlobal.length > 0) {
+        containerSelectedGlobal?.forEach(element => {
+            contaninerProductosGlobal?.forEach(elementP => {
+
+                if (element.numberProduct == elementP.counter && globalState.get(ctx.from)?.categorySelectActive.id == elementP.category) {
+                    console.log('element.numberProductGlobal',element.numberProduct)
+                    console.log('elementP.counterGlobal',elementP.counter)
+                    console.log('categorySelectActive.idGlobal',globalState.get(ctx.from)?.categorySelectActive.id)
+                    console.log('elementP.categoryGlobal',elementP.category)
                     elementP.quantity = element.quantity;
                     elementP.status = true;
                 }
@@ -141,49 +144,33 @@ const addproducts = async (selected)  => {
 /**
  * Metodo que permite eliminar productos seleccionados
  */
- const deleteProducts = async (selected, type)  => { 
-    let products = selected.split(',');
-    // let containerSelected = [];
-    // let flag = false;
-    // isNaN
-    // const found = products.find(element => element == elementS.numberProduct);
-    // if (found == undefined) {
-    //     flag = true;
-    // }
-    console.log('produc validSelectProductDelete', products)
-    console.log('produc contaninerProductos', contaninerProductos)
+ const deleteProducts = async (ctx, type)  => { 
+    let products = ctx?.body.split(',');
     
     products.forEach(elementS => {
-        contaninerProductos.forEach(element => {
+        globalState.get(ctx.from).contaninerProductos.forEach(element => {
             if (element.counter == elementS && element.type === type) {
                 element.quantity = 0;
             }
             
         });
     });
-    console.log('despues de la validacion', contaninerProductos)
-    return contaninerProductos;
+
+    console.log('despues de la globalState.get(ctx.from).contaninerProductos', globalState.get(ctx.from).contaninerProductos)
+    return globalState.get(ctx.from).contaninerProductos;
 }
 
 /**
  * Metodo que permite validar si los datos ingresados para seleccionar la promocion son validos
  */
- const validSelectProductDelete = async (selected)  => { 
-    let products = selected.split(',');
+ const validSelectProductDelete = async (ctx)  => { 
+    let products = ctx?.body.split(',');
     let containerSelected = [];
     let flag = false;
-    // isNaN
-    // const found = products.find(element => element == elementS.numberProduct);
-    // if (found == undefined) {
-    //     flag = true;
-    // }
-    // console.log('produc validSelectProductDelete', products)
-    // console.log('produc contaninerProductos', contaninerProductos)
     products.forEach(element => {
         if (isNaN(element)) {
             flag = true;
         }
-        // console.log('dato element isNaN', element)
     });
     return flag;
 }
@@ -191,37 +178,37 @@ const addproducts = async (selected)  => {
 /**
  * Metodo que permite validar si los datos ingresados para seleccionar la promocion son validos
  */
- const validListProducts = async ()  => { 
-    let flag = false;
-    contaninerProductos.forEach(element => {
-        if (element?.quantity > 0 ) {
-            flag = true;
+ const validListProducts = async (ctx)  => { 
+    let flagGlobal = false;
+    globalState.get(ctx?.from)?.contaninerProductos.forEach(elementG => {
+        if (elementG?.quantity > 0 ) {
+            flagGlobal = true;
         }
     });
-    return flag;
+    return flagGlobal;
 }
 
 /**
  * Metodo que permite validar si los datos ingresados para seleccionar la promocion son validos
  */
-const validSelectPromotion = async (selected)  => { 
-    let products = selected.split(',');
-    let containerSelected = [];
+const validSelectPromotion = async (ctx)  => { 
+    let products = ctx?.body.split(',');
+    let containerSelectedGlobal = [];
     let flag = false;
     products.forEach(element => {
         let divider = element.split(':');
-        containerSelected.push({
+        containerSelectedGlobal.push({
             numberProduct: divider[0],
             quantity: divider[1],
         });
     });
 
-    containerSelected.forEach(elementS => {
+    containerSelectedGlobal.forEach(elementS => {
         if (isNaN(elementS.numberProduct) || elementS.quantity === undefined || elementS.quantity === '') {
             flag = true;
         }
         
-        const found = lastContainerPromotions.find(element => element == elementS.numberProduct);
+        const found = globalState.get(ctx.from).lastContainerPromotions?.find(element => element == elementS.numberProduct);
         if (found == undefined) {
             flag = true;
         }
@@ -232,8 +219,9 @@ const validSelectPromotion = async (selected)  => {
 /**
  * Metodo que permite agregar las promociones seleccionadas
  */
-const addPromotions = async (selected)  => { 
-    let products = selected.split(',');
+const addPromotions = async (ctx)  => { 
+
+    let products = ctx?.body.split(',');
     let containerSelected = [];
 
     products.forEach(element => {
@@ -245,12 +233,16 @@ const addPromotions = async (selected)  => {
     });
     
     if (containerSelected.length > 0) {
+        let globalcontaninerProductos = globalState.get(ctx.from)?.contaninerProductos;
         containerSelected?.forEach(element => {
-            contaninerProductos?.forEach(elementP => {
-                if (element.numberProduct == elementP.counter) {
+            globalcontaninerProductos.forEach(elementP => {
+                if (element.numberProduct == elementP.counter && elementP.type === 'promotion') {
                     elementP.quantity = element.quantity;
                 }
             });
+        });
+        globalState.update(ctx.from, {
+            contaninerProductos: globalcontaninerProductos
         });
     }
 }
@@ -258,23 +250,26 @@ const addPromotions = async (selected)  => {
 /**
  * Metodo que permite validar si los datos ingresados para seleccionar la categoria son validos
  */
-const validSelectCategory = async (selected)  => { 
-    let containerSelected = [];
+const validSelectCategory = async (ctx)  => { 
+    let GcontainerSelected = [];
     let flag = false;
-    contaninerIdCategory.forEach(element => {
-        containerSelected.push(element.numberCategory);
+    let Gflag = false;
+    let globalContaninerIdCategory = globalState.get(ctx.from).contaninerIdCategory
+    globalContaninerIdCategory.forEach(elementG => {
+        GcontainerSelected.push(elementG.numberCategory);
     });
-    if (!containerSelected.includes(parseInt(selected.toLowerCase().trim()))) {
-        flag = true;
+
+    if (!GcontainerSelected.includes(parseInt(ctx.body.toLowerCase().trim()))) {
+        Gflag = true;
     }
-    return flag;
+    return Gflag;
 }
 
 /**
  * Metodo que permite validar si los datos ingresados para seleccionar las productos son validos
  */
-const validSelectProducts = async (selected)  => { 
-    let products = selected.split(',');
+const validSelectProducts = async (ctx)  => { 
+    let products = ctx.body.split(',');
     let containerSelected = [];
     let flag = false;
     products.forEach(element => {
@@ -290,11 +285,35 @@ const validSelectProducts = async (selected)  => {
             flag = true;
         }
         
-        const found = lastContainerProducts.find(element => element == elementS.numberProduct);
+        const found = globalState.get(ctx.from)?.lastContainerProducts.find(element => element == elementS.numberProduct);
         if (found == undefined) {
             flag = true;
         }
     });
+
+    let productsGlobal = ctx.body.split(',');
+    let containerSelectedGlobal = [];
+    let flagGlobal = false;
+    productsGlobal.forEach(element => {
+        let dividerGlobal = element.split(':');
+        containerSelectedGlobal.push({
+            numberProduct: dividerGlobal[0],
+            quantity: dividerGlobal[1],
+        })
+    });
+    
+    containerSelectedGlobal.forEach(elementS => {
+        if (isNaN(elementS.numberProduct) || elementS.quantity == undefined || elementS.quantity == '') {
+            flag = true;
+        }
+        let lastContainerProductsGlobal = globalState.get(ctx.from)?.lastContainerProducts;
+        const foundGlobal = lastContainerProductsGlobal.find(element => element == elementS.numberProduct);
+        if (foundGlobal == undefined) {
+            flagGlobal = true;
+        }
+    });
+
+
     return flag;
 }
 
@@ -302,67 +321,82 @@ const validSelectProducts = async (selected)  => {
  * Metodo que permite guardar un delivery
  */
 const saveOrder = async (ctx, provider)  => {
-    let dataProducts = {
-        products: [],
-        address: "",
-        longitude: "",
-        latitude: "",
-        phone: "",
-        nameClient: "",
-    };
-
-    let data = [];
-    let dataMessage = [];
-    dataMessage.push(`* 🛒 Se Registro un nuevo pedido con la siguiente informacion: 🛒* \n`);
-    dataMessage.push(`*Nombre Cliente:* ${ctx?.pushName} \n *Telefono:* +${ctx?.from} \n`);
-    dataMessage.push(`* Direccion:* ${ctx?.message?.conversation} \n`);
-    contaninerProductos?.forEach(c => {
-        if (c.quantity > 0) {
-            dataProducts.products.push({
-                "_id": c._id,
-                "name": c.name,
-                "price": c.price,
-                "category": c.category,
-                "quantity": c.quantity
-            });
-            dataMessage.push(` *Nombre:* ${c.name} *Precio:* ${c.price} *Cantidad:* ${c.quantity} \n`);
-        }
-    });
-
-    dataProducts.address = ctx?.message?.conversation;
-    dataProducts.latitude = ctx?.message?.locationMessage?.degreesLatitude;
-    dataProducts.longitude = ctx?.message?.locationMessage?.degreesLongitude;
-    dataProducts.phone = ctx?.from;
-    dataProducts.nameClient = ctx?.pushName;
+    try {
+        let dataProductsGlobal = {
+            products: [],
+            address: "",
+            longitude: "",
+            latitude: "",
+            phone: "",
+            nameClient: "",
+        };
     
-    postDelivery(dataProducts);
-    data.push(`🥳 🛒Su pedido fue Exitoso, sera contactado un operador para validar la informacion suministrada 🛒 🥳`);
-    data.push(`Si requiere realizar un cambio del pedido lo podra hacer cuando se comunique con el Agente.`);
-    provider.sendText('56936499908@s.whatsapp.net', dataMessage.toString());
-    return {body: `${data}`}
+        let dataGlobal = [];
+        let dataMessageGlobal = [];
+        dataMessageGlobal.push(`* 🛒 Se Registro un nuevo pedido con la siguiente informacion: 🛒* \n`);
+        dataMessageGlobal.push(`*Nombre Cliente:* ${ctx?.pushName} \n *Telefono:* +${ctx?.from} \n`);
+        dataMessageGlobal.push(`* Direccion:* ${ctx?.message?.conversation} \n`);
+        let globalcontaninerProductos = globalState.get(ctx.from)?.contaninerProductos
+        globalcontaninerProductos?.forEach(c => {
+            if (c.quantity > 0) {
+                dataProductsGlobal.products.push({
+                    "_id": c._id,
+                    "name": c.name,
+                    "price": c.price,
+                    "category": c.category,
+                    "quantity": c.quantity
+                });
+                dataMessageGlobal.push(` *Nombre:* ${c.name} *Precio:* ${c.price} *Cantidad:* ${c.quantity} \n`);
+            }
+        });
+    
+        dataProductsGlobal.address = ctx?.message?.conversation;
+        dataProductsGlobal.latitude = ctx?.message?.locationMessage?.degreesLatitude;
+        dataProductsGlobal.longitude = ctx?.message?.locationMessage?.degreesLongitude;
+        dataProductsGlobal.phone = ctx?.from;
+        dataProductsGlobal.nameClient = ctx?.pushName;
+        console.log('dataProductsGlobal', dataProductsGlobal)
+        postDelivery(dataProductsGlobal);
+    
+        dataGlobal.push(`🥳 🛒Su pedido fue Exitoso, sera contactado un operador para validar la informacion suministrada 🛒 🥳`);
+        dataGlobal.push(`Si requiere realizar un cambio del pedido lo podra hacer cuando se comunique con el Agente.`);
+        provider.sendText('56949079809@s.whatsapp.net', dataMessageGlobal.toString());
+        
+        cleanData(ctx);
+        return {body: `${dataGlobal}`}
+    } catch (error) {
+        console.log('error', error)
+    }
+
+    
 }
 
 /**
  * Metodo que permite consultar las promociones
  */
-const getPromotion = async (selected)  => {
+const getPromotion = async (ctx)  => {
+
     const products = await getProducts("64adedb4035179d0b5492fe1", "promotion");
     let data= [];
     // data.push("Promociones Disponibles");
     let counter = 1
-    lastContainerPromotions = [];
+    lastContainerPromotionsGlobal = [];
+    let contaninerProductosGlobal = globalState.get(ctx.from)?.contaninerProductos ?? [];
+    globalState.update(ctx.from, {
+        lastContainerPromotions: []
+    });
     products?.data.forEach(c => {
         let value =`\n 👉# ${counter}: *${c.name}* ${c.description} Price:${c.price}\n`
         data.push(value)
-        lastContainerPromotions.push(counter)
-        let result = contaninerProductos.findIndex(elementP => {
+        lastContainerPromotionsGlobal.push(counter)
+        let result = contaninerProductosGlobal.findIndex(elementP => {
             if (elementP._id == c._id) {
                 return true
             }
         })
 
         if (result == -1) {
-            contaninerProductos.push({
+            contaninerProductosGlobal.push({
                 "_id": c._id,
                 "name": c.name,
                 "nameView": value,
@@ -377,6 +411,11 @@ const getPromotion = async (selected)  => {
         value = '';
         counter++;
     });
+
+    globalState.update(ctx.from, {
+        contaninerProductos: contaninerProductosGlobal,
+        lastContainerPromotions: lastContainerPromotionsGlobal
+    });
     
     const prod = {body: `${data}`};
 
@@ -386,36 +425,40 @@ const getPromotion = async (selected)  => {
 /**
  * Metodo que permite consultar y crear la lista de productos
  */
-const product = async (selected)  => {
-    // console.log('product selected', selected)
-    const found = contaninerIdCategory.find(element => element.numberCategory == `${selected}`);
-    if ( found !== undefined && found?.id !== undefined ) {
-        // console.log('ingreso al if validacion', found.id)
-        categorySelectActive = found;
-        lastContainerProducts = [];
-        const products = await getProducts(found.id, "regular");
-        let data= [];
-        // const mapDatos = catgories.data.map((c) => ({body: `${c.name}`}))
-            data.push("Productos Disponibles");
-            data.push("\nIndique el numero de producto de su interes:");
-            let counter = 1;
+const product = async (ctx)  => {
+    const foundGlobal = globalState.get(ctx.from).contaninerIdCategory.find(element => element.numberCategory == `${ctx.body}`);
+    
+    if ( foundGlobal !== undefined && foundGlobal?.id !== undefined ) {
+        globalState.update(ctx.from, {
+            categorySelectActive: foundGlobal
+        });
+
+        let contaninerProductosGlobal = globalState.get(ctx.from)?.contaninerProductos ?? [];
+        let lastContainerProductsGlobal = [];
+        globalState.update(ctx.from, {
+            lastContainerProducts: []
+        });
+        const products = await getProducts(foundGlobal.id, "regular");
+        let dataGlobal= [];
+            dataGlobal.push("Productos Disponibles");
+            dataGlobal.push("\nIndique el numero de producto de su interes:");
+            let counterGlobal = 1;
             products.data.forEach(c => {
-                // console.log('c procategoryProductsductos', c)
-                let value =`\n 👉#: ${counter} ${c.name} Price:${c.price}`
-                data.push(value)
-                lastContainerProducts.push(counter)
-                let result = contaninerProductos.findIndex(elementP => {
+                let valueGlobal =`\n 👉#: ${counterGlobal} ${c.name} Precio:${c.price}`
+                dataGlobal.push(valueGlobal)
+                lastContainerProductsGlobal.push(counterGlobal);
+                let result = contaninerProductosGlobal.findIndex(elementP => {
                     if (elementP._id == c._id) {
                         return true
                     }
                 })
 
                 if (result == -1) {
-                    contaninerProductos.push({
+                    contaninerProductosGlobal.push({
                         "_id": c._id,
                         "name": c.name,
-                        "nameView": value,
-                        "counter": counter,
+                        "nameView": valueGlobal,
+                        "counter": counterGlobal,
                         "price": c.price,
                         "category": c.categoryProducts[0],
                         "quantity": 0,
@@ -423,45 +466,50 @@ const product = async (selected)  => {
                         "status": false
                     })
                 }
-                value = '';
-                counter++;
+                valueGlobal = '';
+                counterGlobal++;
             });
-            const prod = {body: `${data}`}
-            return prod;
+
+            globalState.update(ctx.from, {
+                contaninerProductos: contaninerProductosGlobal,
+                lastContainerProducts: lastContainerProductsGlobal
+            });
+            const prodGlobal = {body: `${dataGlobal}`}
+            return prodGlobal;
+            console.log('datos prodGlobal', prodGlobal)
     }
 }
 
 /**
  * Metodo que muestra la lista de productos previamente seleccionados
  */
-const listProductSelected = async (selected)  => {
-    let data= [];
+const listProductSelected = async (ctx)  => {
+    let dataGlobal= [];
 
-    data.push("Productos Seleccionados\n\n");
+    dataGlobal.push("Productos Seleccionados\n\n");
 
-    let counter = 1
-    let sumProducts = 0;
-    contaninerProductos.forEach(c => {
-        // console.log('listProductSelected lelgo', c)
+    let counterGlobal = 1
+    let sumProductsGlobal = 0;
+    let contaninerProductosGlobal = globalState.get(ctx.from)?.contaninerProductos ?? [];
+    contaninerProductosGlobal.forEach(c => {
         if (c.quantity != 0) {
-            let value =`👉 #:${counter} Nombre: ${c.name} Cantidad:${c.quantity}  Precio:${c.price}\n`
-            data.push(value)
-            sumProducts =  ( parseFloat(sumProducts) + (parseFloat(c.price) * parseFloat(c.quantity)))
+            let valueG =`👉 #:${counterGlobal} Nombre: ${c.name} Cantidad:${c.quantity}  Precio:${c.price}\n`
+            dataGlobal.push(valueG)
+            sumProductsGlobal =  ( parseFloat(sumProductsGlobal) + (parseFloat(c.price) * parseFloat(c.quantity)))
         }
 
-        value = '';
-        counter++;
+        valueG = '';
+        counterGlobal++;
     });
-    
+
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         minimumFractionDigits: 3,
         currency:"CLP"
-    }) 
+    });
     
-    const dollar = formatter.format(sumProducts);
-    data.push(`\nTotal a Pagar: ${dollar}`);
-    return {body: `${data}`}
+    const dollarG = formatter.format(sumProductsGlobal);
+    return {body: `${dataGlobal}`}
 }
 
 /**
@@ -471,7 +519,6 @@ const listProductPreSelected = async (selected)  => {
     let data= [];
     data.push("Indique en orden la cantidad por cada combo seleccionado\n\n");
     let counter = 1
-    // let sumProducts = 0;
     contaninerProductos.forEach(c => {
         if (c.quantity == 0 && c.status) {
             let value =`👉:#${counter} ${c.name}  Precio:${c.price}\n`
@@ -484,6 +531,4 @@ const listProductPreSelected = async (selected)  => {
     return {body: `${data}`}
 }
 
-// module.exports = listProductPreSelected,
 module.exports = { cleanData, validListProducts, validSelectProductDelete, deleteProducts, listProductPreSelected, listProductSelected, product, getPromotion, saveOrder, validSelectProducts, validSelectCategory, postDelivery, getCategory, category, addproducts, validSelectPromotion, addPromotions }
-// export default sumar;
