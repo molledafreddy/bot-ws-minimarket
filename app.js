@@ -345,9 +345,6 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
 const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
 .addAnswer(["*Estamos desviando tu conversacion a nuestro Agente*"], null,
    async(ctx, {provider, endFlow}) => {
-    console.log('ctx', ctx.key?.remoteJid)
-    //    const nanoid = await required('nanoid')
-    //    const ID_GROUP = nanoid.nanoid(5)
     STATUS = false;
     const name = ctx.pushName;
     const numAgente = ctx.key?.remoteJid;
@@ -376,7 +373,7 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
  const flowValidTime = addKeyword( EVENTS.WELCOME)
  .addAction(async(ctx,{gotoFlow}) => {
     const horaActual = moment();
-    let horario = "12:00-22:00"
+    let horario = "11:00-22:00"
     let rangoHorario = horario.split("-");
     let horaInicio = moment(rangoHorario[0], "HH:mm");
     let horaFin = moment(rangoHorario[1], "HH:mm");
@@ -433,7 +430,7 @@ const flowDisable = addKeyword("disable")
 */
 const flowPrincipal = addKeyword("welcome")
  .addAnswer([
-    '🏜️ Hola, Bienvenido a *Minimarket Los Medanos wwwwww* 🌵', 
+    '🏜️ Hola, Bienvenido a *Minimarket Los Medanos* 🌵', 
     '⌛ Horario disponible desde las 8:00 AM hasta las 10:00 PM. ⌛',
     '📝 a través de este canal te ofrecemos los siguientes servicios de compra:'
     
@@ -468,7 +465,8 @@ const main = async () => {
     const adapterDB = new MongoAdapter({
         dbUri: MONGO_DB_URI,
         dbName: MONGO_DB_NAME,
-    })
+    });
+
     const adapterFlow = createFlow([
         flowValidTime,
         flowPrincipal, 
@@ -490,10 +488,8 @@ const main = async () => {
         provider: adapterProvider,
         database: adapterDB,
         flow: adapterFlow,
-    })
-    
-    QRPortalWeb()
-           
+    });
+    QRPortalWeb();
 }
 
 main()
