@@ -20,6 +20,7 @@
         "bcrypt-nodejs": "^0.0.3",
         "dotenv": "^16.3.1",
         "mime-types": "2.1.35",
+        "moment": "^2.29.4",
         "mongodb": "^4.12.1",
         "mongoose": "^7.2.4",
         "nanoid": "^4.0.2",

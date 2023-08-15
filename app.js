@@ -4,6 +4,7 @@ const QRPortalWeb = require('@bot-whatsapp/portal')
 const BaileysProvider = require('@bot-whatsapp/provider/baileys')
 const MongoAdapter = require('@bot-whatsapp/database/mongo');
 const globalState = require('./state/globalState');
+const moment = require("moment");
 
 var fs = require('fs');
 const service = require('./src/services/productService');
@@ -238,19 +239,11 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         if (valid) {
             console.log('validacion categorias ', valid)
             return fallBack({body: '❌ Debe indicar el numero de producto y cantidad con una estructura valida Ejemplo 1:3,2:4'});
-            // return fallBack();
         }
         if (!valid) {
             await flowDynamic(await service.addproducts(ctx));
             return await gotoFlow(flowValidSelectProd);
         } 
-        
-        
-        //  console.log('ctx.body.toLowerCase().trim() ', ctx.body.toLowerCase().trim())
-        // if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
-        //     return await gotoFlow(flowCategory)
-        // }
-
         
      }
     )
@@ -289,7 +282,6 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         
         let valid = await service.validSelectPromotion(ctx);
         if (!valid) {
-            // console.log('ingreso al if negado', valid)
             await flowDynamic( await service.addPromotions(ctx));
             return await gotoFlow(FlowMenuPromocion)
         }
@@ -334,7 +326,6 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
             }
          
      },
-    // [flowLisSelectProducts]
  );
 
  const FlowAgente = addKeyword(['4', 'Agente', 'AGENTE'])
@@ -382,14 +373,67 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
      (ctx,{ endFlow }) => {  return endFlow({body: 'Gracias'}); }
  )
 
+ const flowValidTime = addKeyword( EVENTS.WELCOME)
+ .addAction(async(ctx,{gotoFlow}) => {
+    const horaActual = moment();
+    let horario = "12:00-22:00"
+    let rangoHorario = horario.split("-");
+    let horaInicio = moment(rangoHorario[0], "HH:mm");
+    let horaFin = moment(rangoHorario[1], "HH:mm");
+    if (horaActual.isBetween(horaInicio, horaFin)) {
+        return await gotoFlow(flowPrincipal); 
+    } else {
+        return await gotoFlow(flowDisable);
+    }
+});
+
+
+
+
+ /**
+* Declarando flujo principal
+*/
+const flowDisable = addKeyword("disable")
+.addAnswer([
+   '🏜️ Hola, Bienvenido a *Minimarket Los Medanos* 🌵', 
+   '⌛ Nuestra disponibilidad para atenderte esta desde las 12:00 PM hasta las 10:00 PM. ⌛',
+   
+])
+.addAnswer(
+    [
+       '*Pero puedes ver nuestras redes sociales y receurda qeu en el horario habilitado Empieza tu pedido escribiendo la palabra Hola*', 
+       '👉 #1 Facebook', 
+       '👉 #2 Instagram', 
+       '👉 #3 TicTok'
+   ],
+   { capture: true },
+    async (ctx,{gotoFlow, endFlow}) => {
+        if (ctx.body === "1") {
+           return await endFlow({
+            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Facebook\n 🔗 https://www.almacenesdigitales.cl/Ecommerce.xhtml?almacen=436 \n*Gracias*'});
+        }
+        if (ctx.body === "2") {
+            return await endFlow({
+            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Instagram\n 🔗 https://www.almacenesdigitales.cl/Ecommerce.xhtml?almacen=436 \n*Gracias*'});
+        }
+        if (ctx.body === "3") {
+            return await endFlow({
+            body: 'En el siguiente Link tendras la opcion de ver Nuestro TikTok\n 🔗 https://www.almacenesdigitales.cl/Ecommerce.xhtml?almacen=436 \n*Gracias*'});
+        } 
+
+        if (![1, 2, 3].includes(parseInt(ctx.body.toLowerCase().trim()))) {
+            return fallBack({body: "*Opcion no valida*, \nPor favor seleccione una opcion valida."});
+        }
+    }
+)
 
 
 /**
 * Declarando flujo principal
 */
-const flowPrincipal = addKeyword(EVENTS.WELCOME)
+const flowPrincipal = addKeyword("welcome")
  .addAnswer([
-    '🏜️ Hola, Bienvenido a *Minimarket Los Medanos* 🌵', 
+    '🏜️ Hola, Bienvenido a *Minimarket Los Medanos wwwwww* 🌵', 
     '⌛ Horario disponible desde las 8:00 AM hasta las 10:00 PM. ⌛',
     '📝 a través de este canal te ofrecemos los siguientes servicios de compra:'
     
@@ -404,10 +448,7 @@ const flowPrincipal = addKeyword(EVENTS.WELCOME)
     ],
     { capture: true },
      async (ctx,{gotoFlow, flowDynamic, fallBack}) => {
-       
         globalState.update(ctx.from, { name: ctx.pushName ?? ctx.from });
-        // let dataGlobal = globalState.get(ctx.from);
-        // console.log('ctx flowPrincipal dataGlobal', dataGlobal)
         if (ctx.body === "1") {
             await flowDynamic(await service.getPromotion(ctx));
             return await gotoFlow(flowPromotion); 
@@ -417,11 +458,11 @@ const flowPrincipal = addKeyword(EVENTS.WELCOME)
             return await gotoFlow(flowCategory);
          }
         if (![1, 2, 3, 4].includes(parseInt(ctx.body.toLowerCase().trim()))) {
-            return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
+            return fallBack({body: "*Opcion no valida*, \nPor favor seleccione una opcion valida."});
         }
      },
     [flowLink, FlowAgente2]
- )
+ );
 
 const main = async () => {
     const adapterDB = new MongoAdapter({
@@ -429,7 +470,9 @@ const main = async () => {
         dbName: MONGO_DB_NAME,
     })
     const adapterFlow = createFlow([
+        flowValidTime,
         flowPrincipal, 
+        flowDisable,
         flowLisCategoryLacteos, 
         flowLisSelectProducts,
         flowValidSelectProd,
@@ -439,7 +482,7 @@ const main = async () => {
         FlowMenuPromocion,
         flowValidPromotionDelete,
         flowValidProductDelete,
-        flowPromotion
+        flowPromotion,
     ]);
     
     const adapterProvider = createProvider(BaileysProvider)
