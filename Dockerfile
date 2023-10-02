@@ -9,7 +9,7 @@
 # CMD ["npm", "start"]
 
 FROM --platform=linux/amd64 node:18-bullseye as bot
-# RUN npm cache clean --force
+RUN npm cache clean --force
 # RUN npm install -g ts-node ts-express
 WORKDIR /app
 COPY package*.json ./

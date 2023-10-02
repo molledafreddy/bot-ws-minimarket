@@ -38,7 +38,7 @@ const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
  const flowLisSelectProducts = addKeyword(['Resumen Compras'])
  .addAnswer(
     [
-        'Opciones disponibles para avanzar:\n',
+        '*Opciones disponibles para avanzar:*\n',
         '👉 #1  Concretar Compra',
         '👉 #2  Cancelar Compra',
         '👉 #0  Menu principal\n', 
@@ -77,8 +77,8 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
 ])
  .addAnswer(
     [
-        'Procesamos su seleccion, indique El numero de su siguiente paso:.\n',
-        '👉 #1  Resumen compras', 
+        '*Procesamos su seleccion, indique El numero de su siguiente paso:*\n',
+        '👉 #1  Resumen y Finalizar Compra', 
         '👉 #2  Cancelar Compra',
         '👉 #3  Eliminar Productos', 
         '👉 #0  Menu principal\n',
@@ -107,16 +107,13 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             }
          
      },
-    // [flowLisSelectProducts]
  );
-
-
 
  const flowValidSelectProd = addKeyword('select')
  .addAnswer(
     [
         '*Procesamos su seleccion, indique El numero de su siguiente paso:*\n',
-        '👉 #1  Resumen compras', 
+        '👉 #1  Resumen y Finalizar Compra', 
         '👉 #2  Categorias',
         '👉 #3  Eliminar Productos',
         '👉 #4  Cancelar Compra', 
@@ -158,22 +155,18 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
     [
         'Indique los Codigos de los *Productos* que desee eliminar, separados por una coma',
         'Ejemplo: 1,3,5',
-        'Digite la palabra *Volver* para ir al menu anterior',
+        'Digite el Numero *0* para ir al menu anterior',
     ],
     { capture: true},
     async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
-        if (ctx.body.toLowerCase().trim() == 'volver' ) {
+        if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return await gotoFlow(flowPrincipal)
         }
 
         const valid = await service.validSelectProductDelete(ctx);
         if (!valid) {
-            console.log('validacion validSelectProductDelete ', valid)
-
             await flowDynamic(await service.deleteProducts(ctx, 'products'));
-
             const resultvalidListP = await service.validListProducts(ctx);
-            console.log('validacion resultvalidList ', resultvalidListP)
             if (!resultvalidListP) {
                 await flowDynamic(await service.category(ctx));
                 return await gotoFlow(flowCategory);
@@ -182,10 +175,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             }
             
         }
-        
         return fallBack({body: '❌ Debe indicar el codigo del producto que desea eliminar con una estructura valida Ejemplo 1,2,3'});
-        
-        
      },
  );
 
@@ -194,11 +184,11 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
     [
         'Indique los Codigos de las *Promociones* que desee eliminar, separados por una coma',
         'Ejemplo: 1,3,5',
-        '\nIngrese la palabra *Volver* para ir al menu anterior',
+        '\nIngrese El Numero *0* para ir al menu anterior',
     ],
     { capture: true},
     async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
-        if (ctx.body.toLowerCase().trim() == 'volver' ) {
+        if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return await gotoFlow(flowPrincipal)
         }
 
@@ -226,11 +216,12 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
     [
         'Indique los Numeros de los productos que desee y la cantidad, separados por una coma',
         'Ejemplo: 1:2,2:1,3:4',
-        '\nIngrese la palabra *volver* para ir a la lista de categorias',
+        '\nIngrese el Numero *0* para ir a la lista de categorias',
     ],
     { capture: true},
     async(ctx, {gotoFlow, flowDynamic, fallBack}) => {
-        if (ctx.body.toLowerCase().trim() == 'volver' ) {
+        
+        if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             await flowDynamic(await service.category(ctx));
             return await gotoFlow(flowCategory);
         }
@@ -254,29 +245,26 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
     ['Ingrese la categoria'],
     { capture: true },
     async (ctx,{flowDynamic, gotoFlow, fallBack}) => {
-        // console.log('llego por aca flowcategory', ctx)
-        // console.log('llego por aca flowCategory')
         if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
         const validCategory = await service.validSelectCategory(ctx);
         if (validCategory) {
-            return fallBack({body: "*Opcion no valida*, \npor favor seleccione una opcion valida."});
+            return fallBack({body: "*Opcion no valida*, \nPor favor seleccione una opcion valida."});
         } else {
             await flowDynamic(await service.product(ctx));
             return await gotoFlow(flowLisCategoryLacteos);
         }
     },
-//    [flowLisCategoryLacteos]
 );
 
  const flowPromotion = addKeyword(['1', 'Promociones', 'Promocion', 'promociones', 'promocion'])
  .addAnswer(
     [
         '*Indique el numero de las Promociones que desee y la cantidad separadas por coma Ejemplo: 1:2,3:2*\n', 
-        'Indique la palabra *volver* para ir al menu principal',
+        'Indique Numero *0* para ir al menu principal',
     ],
      { capture: true},
      async (ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
-        if (ctx.body.toLowerCase().trim() == 'volver' ) {
+        if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return await gotoFlow(flowPrincipal)
         }
         
@@ -296,8 +284,8 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
 const FlowMenuPromocion = addKeyword(['MenuPromocion'])
  .addAnswer(
     [
-        'Seleccione una opcion para avanzar:\n',
-        '👉 #1  Resumen Compras',
+        '*Seleccione una opcion para avanzar:*\n',
+        '👉 #1  Resumen y Finalizar Compra',
         '👉 #2  Eliminar Productos', 
         '👉 #3  Cancelar Compra',
         '👉 #0  Menu principal\n',  
@@ -349,9 +337,7 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
     const name = ctx.pushName;
     const numAgente = ctx.key?.remoteJid;
     const message = `El cliente ${name} con el celular ${numAgente} solicita atencion mas personalizada`;
-    // const message = `El cliente  con el celular  solicita atencion mas personalizada`;
     const refProvider = await provider.getInstance();
-    // await refProvider.sendMessage(numAgente, {Text: message});
     provider.sendText('56936499908@s.whatsapp.net', message)
        service.cleanData(ctx);
        return endFlow({body: '*Gracias*'});
@@ -373,7 +359,7 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
  const flowValidTime = addKeyword( EVENTS.WELCOME)
  .addAction(async(ctx,{gotoFlow}) => {
     const horaActual = moment();
-    let horario = "11:00-22:00"
+    let horario = "09:00-24:00"
     let rangoHorario = horario.split("-");
     let horaInicio = moment(rangoHorario[0], "HH:mm");
     let horaFin = moment(rangoHorario[1], "HH:mm");
@@ -398,24 +384,24 @@ const flowDisable = addKeyword("disable")
 ])
 .addAnswer(
     [
-       '*Pero puedes ver nuestras redes sociales y receurda qeu en el horario habilitado Empieza tu pedido escribiendo la palabra Hola*', 
+       '*Pero puedes ver nuestras redes sociales y receurda que en el horario habilitado Empieza tu pedido escribiendo la palabra Hola*', 
        '👉 #1 Facebook', 
        '👉 #2 Instagram', 
        '👉 #3 TicTok'
    ],
    { capture: true },
-    async (ctx,{gotoFlow, endFlow}) => {
+    async (ctx,{ endFlow, fallBack}) => {
         if (ctx.body === "1") {
            return await endFlow({
-            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Facebook\n 🔗 https://www.almacenesdigitales.cl/Ecommerce.xhtml?almacen=436 \n*Gracias*'});
+            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Facebook\n 🔗 https://web.facebook.com/profile.php?id=61550250449208 \n*Gracias*'});
         }
         if (ctx.body === "2") {
             return await endFlow({
-            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Instagram\n 🔗 https://www.almacenesdigitales.cl/Ecommerce.xhtml?almacen=436 \n*Gracias*'});
+            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Instagram\n 🔗 https://www.instagram.com/minimarketlosmedanos/ \n*Gracias*'});
         }
         if (ctx.body === "3") {
             return await endFlow({
-            body: 'En el siguiente Link tendras la opcion de ver Nuestro TikTok\n 🔗 https://www.almacenesdigitales.cl/Ecommerce.xhtml?almacen=436 \n*Gracias*'});
+            body: 'En el siguiente Link tendras la opcion de ver Nuestro TikTok\n 🔗 https://www.tiktok.com/@minimarketlosmedanos \n*Gracias*'});
         } 
 
         if (![1, 2, 3].includes(parseInt(ctx.body.toLowerCase().trim()))) {
@@ -431,7 +417,7 @@ const flowDisable = addKeyword("disable")
 const flowPrincipal = addKeyword("welcome")
  .addAnswer([
     '🏜️ Hola, Bienvenido a *Minimarket Los Medanos* 🌵', 
-    '⌛ Horario disponible desde las 8:00 AM hasta las 10:00 PM. ⌛',
+    '⌛ Horario disponible desde las 9:00 AM hasta las 10:00 PM. ⌛',
     '📝 a través de este canal te ofrecemos los siguientes servicios de compra:'
     
 ])

@@ -156,7 +156,6 @@ const addproducts = async (ctx)  => {
         });
     });
 
-    console.log('despues de la globalState.get(ctx.from).contaninerProductos', globalState.get(ctx.from).contaninerProductos)
     return globalState.get(ctx.from).contaninerProductos;
 }
 
@@ -346,7 +345,7 @@ const saveOrder = async (ctx, provider)  => {
                     "category": c.category,
                     "quantity": c.quantity
                 });
-                dataMessageGlobal.push(` *Nombre:* ${c.name} *Precio:* ${c.price} *Cantidad:* ${c.quantity} \n`);
+                dataMessageGlobal.push(` *Nombre:* ${c.name} *Precio: * ${c.price} *Cantidad:* ${c.quantity} \n`);
             }
         });
     
@@ -358,7 +357,7 @@ const saveOrder = async (ctx, provider)  => {
         console.log('dataProductsGlobal', dataProductsGlobal)
         postDelivery(dataProductsGlobal);
     
-        dataGlobal.push(`🥳 🛒Su pedido fue Exitoso, sera contactado un operador para validar la informacion suministrada 🛒 🥳`);
+        dataGlobal.push(`🥳 🛒Su pedido fue Exitoso, sera contactado por un operador para validar la informacion suministrada 🛒 🥳`);
         dataGlobal.push(`Si requiere realizar un cambio del pedido lo podra hacer cuando se comunique con el Agente.`);
         provider.sendText('56949079809@s.whatsapp.net', dataMessageGlobal.toString());
         
@@ -386,7 +385,7 @@ const getPromotion = async (ctx)  => {
         lastContainerPromotions: []
     });
     products?.data.forEach(c => {
-        let value =`\n 👉# ${counter}: *${c.name}* ${c.description} Price:${c.price}\n`
+        let value =`\n 👉# ${counter}: *${c.name}* ${c.description} Precio:${c.price}\n`
         data.push(value)
         lastContainerPromotionsGlobal.push(counter)
         let result = contaninerProductosGlobal.findIndex(elementP => {
@@ -486,7 +485,7 @@ const product = async (ctx)  => {
 const listProductSelected = async (ctx)  => {
     let dataGlobal= [];
 
-    dataGlobal.push("Productos Seleccionados\n\n");
+    dataGlobal.push("*Productos Seleccionados*\n\n");
 
     let counterGlobal = 1
     let sumProductsGlobal = 0;
@@ -497,7 +496,6 @@ const listProductSelected = async (ctx)  => {
             dataGlobal.push(valueG)
             sumProductsGlobal =  ( parseFloat(sumProductsGlobal) + (parseFloat(c.price) * parseFloat(c.quantity)))
         }
-
         valueG = '';
         counterGlobal++;
     });
@@ -507,8 +505,10 @@ const listProductSelected = async (ctx)  => {
         minimumFractionDigits: 3,
         currency:"CLP"
     });
-    
+
     const dollarG = formatter.format(sumProductsGlobal);
+    dataGlobal.push(`\nTotal a Pagar: ${dollarG}`)
+    // dataGlobal = `Total a Pagar: ${dollarG}`;
     return {body: `${dataGlobal}`}
 }
 
