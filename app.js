@@ -338,8 +338,9 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
     const numAgente = ctx.key?.remoteJid;
     const message = `El cliente ${name} con el celular ${numAgente} solicita atencion mas personalizada`;
     const refProvider = await provider.getInstance();
-    provider.sendText('56936499908@s.whatsapp.net', message)
-       service.cleanData(ctx);
+    await provider.sendText('56936499908@s.whatsapp.net', message)
+    // await provider.sendText('56926070900@s.whatsapp.net', message)
+    service.cleanData(ctx);
        return endFlow({body: '*Gracias*'});
    }
 );
@@ -393,15 +394,15 @@ const flowDisable = addKeyword("disable")
     async (ctx,{ endFlow, fallBack}) => {
         if (ctx.body === "1") {
            return await endFlow({
-            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Facebook\n 🔗 https://web.facebook.com/profile.php?id=61550250449208 \n*Gracias*'});
+            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Facebook\n 🔗 https://www.facebook.com/profile.php?id=61550250449208 \n*Gracias*'});
         }
         if (ctx.body === "2") {
             return await endFlow({
-            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Instagram\n 🔗 https://www.instagram.com/minimarketlosmedanos/ \n*Gracias*'});
+            body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Instagram\n 🔗 https://instagram.com/minimarketlosmedanos?igshid=YTQwZjQ0NmI0OA== \n*Gracias*'});
         }
         if (ctx.body === "3") {
             return await endFlow({
-            body: 'En el siguiente Link tendras la opcion de ver Nuestro TikTok\n 🔗 https://www.tiktok.com/@minimarketlosmedanos \n*Gracias*'});
+            body: 'En el siguiente Link tendras la opcion de ver Nuestro TikTok\n 🔗 https://vm.tiktok.com/ZMjkbTYBg/ \n*Gracias*'});
         } 
 
         if (![1, 2, 3].includes(parseInt(ctx.body.toLowerCase().trim()))) {
@@ -430,8 +431,11 @@ const flowPrincipal = addKeyword("welcome")
         '👉 #4 Conversar con un Agente'
     ],
     { capture: true },
-     async (ctx,{gotoFlow, flowDynamic, fallBack}) => {
-        globalState.update(ctx.from, { name: ctx.pushName ?? ctx.from });
+     async (ctx,{gotoFlow, flowDynamic, fallBack, provider}) => {
+         globalState.update(ctx.from, { name: ctx.pushName ?? ctx.from });
+        //  console.log('provider read', ctx.message)
+        //  await service.messageRead(ctx, provider)
+       
         if (ctx.body === "1") {
             await flowDynamic(await service.getPromotion(ctx));
             return await gotoFlow(flowPromotion); 

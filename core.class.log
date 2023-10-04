@@ -1,0 +1,40 @@
+[handleMsg]:  {
+  key: {
+    remoteJid: '56936499908@s.whatsapp.net',
+    fromMe: false,
+    id: '12932F21C0689BE9F3E140B624DBA076',
+    participant: undefined
+  },
+  messageTimestamp: 1696454835,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: 'Hola',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: 'Hola',
+  from: '56936499908'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '56936499908@s.whatsapp.net',
+    fromMe: false,
+    id: 'FB5925BD900FE8753E54E9DE533D3A62',
+    participant: undefined
+  },
+  messageTimestamp: 1696454840,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '4',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '4',
+  from: '56936499908'
+}

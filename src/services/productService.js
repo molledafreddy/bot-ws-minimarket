@@ -47,7 +47,6 @@ const cleanData = async (ctx) => {
     try {
         const extend = 'product';
         const status = true;
-        // console.log('url', `${url}/${extend}/${idCategory}/${clasification}`)
         return await axios.get(
             `${URL}/${extend}/${idCategory}/${clasification}/${status}`,
             // { headers: {"Authorization" : `Bearer ${token}`} }
@@ -316,6 +315,25 @@ const validSelectProducts = async (ctx)  => {
     return flag;
 }
 
+const messageRead = async (ctx, provider)  => {
+    // const lastMsgInChat = await getLastMessageInChat('123456@s.whatsapp.net') // implement this on your end
+    // mark it unread
+    const refProvider = await provider.getInstance();
+    // console.log('refProvider', provider)
+    // await refProvider.groupCreate(`Los Medanos Atencion (${ID_GROUP})`, [
+    //     `${ctx.from}@s.whatsapp.net`
+    // ])
+    // service.cleanData(ctx);
+    // const lastMsgInChat = await getLastMessageInChat('56936499908@s.whatsapp.net') // implement this on your end
+    // console.log('lastMsgInChat', lastMsgInChat)
+    // mark it unread
+    // ctx?.key?.remoteJid
+await refProvider.chatModify({ markRead: false, lastMessages: [ctx.message] }, '56949079809@s.whatsapp.net')
+
+    // const lastMsgInChat = await provider.getLastMessageInChat('56936499908@s.whatsapp.net', dataMessageGlobal.toString());
+    // await provider.chatModify({ markRead: false, lastMessages: [lastMsgInChat] }, '123456@s.whatsapp.net')
+}
+
 /**
  * Metodo que permite guardar un delivery
  */
@@ -359,9 +377,10 @@ const saveOrder = async (ctx, provider)  => {
     
         dataGlobal.push(`🥳 🛒Su pedido fue Exitoso, sera contactado por un operador para validar la informacion suministrada 🛒 🥳`);
         dataGlobal.push(`Si requiere realizar un cambio del pedido lo podra hacer cuando se comunique con el Agente.`);
-        provider.sendText('56949079809@s.whatsapp.net', dataMessageGlobal.toString());
+        // await provider.sendText('56926070900@s.whatsapp.net', dataMessageGlobal.toString());
+        await provider.sendText('56936499908@s.whatsapp.net', dataMessageGlobal.toString());
         
-        cleanData(ctx);
+        await cleanData(ctx);
         return {body: `${dataGlobal}`}
     } catch (error) {
         console.log('error', error)
@@ -475,7 +494,6 @@ const product = async (ctx)  => {
             });
             const prodGlobal = {body: `${dataGlobal}`}
             return prodGlobal;
-            console.log('datos prodGlobal', prodGlobal)
     }
 }
 
@@ -531,4 +549,4 @@ const listProductPreSelected = async (selected)  => {
     return {body: `${data}`}
 }
 
-module.exports = { cleanData, validListProducts, validSelectProductDelete, deleteProducts, listProductPreSelected, listProductSelected, product, getPromotion, saveOrder, validSelectProducts, validSelectCategory, postDelivery, getCategory, category, addproducts, validSelectPromotion, addPromotions }
+module.exports = { cleanData, messageRead, validListProducts, validSelectProductDelete, deleteProducts, listProductPreSelected, listProductSelected, product, getPromotion, saveOrder, validSelectProducts, validSelectCategory, postDelivery, getCategory, category, addproducts, validSelectPromotion, addPromotions }
