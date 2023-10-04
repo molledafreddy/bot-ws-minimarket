@@ -2,10 +2,10 @@
   key: {
     remoteJid: '56936499908@s.whatsapp.net',
     fromMe: false,
-    id: '12932F21C0689BE9F3E140B624DBA076',
+    id: 'AFE7F910506AC8EB1058CFDDA9884A42',
     participant: undefined
   },
-  messageTimestamp: 1696454835,
+  messageTimestamp: 1696461950,
   pushName: 'Freddy',
   broadcast: false,
   message: Message {
@@ -22,19 +22,56 @@
   key: {
     remoteJid: '56936499908@s.whatsapp.net',
     fromMe: false,
-    id: 'FB5925BD900FE8753E54E9DE533D3A62',
+    id: '0D5B034F8951BC49CDC60A571756788F',
     participant: undefined
   },
-  messageTimestamp: 1696454840,
+  messageTimestamp: 1696461953,
   pushName: 'Freddy',
   broadcast: false,
   message: Message {
-    conversation: '4',
+    conversation: 'Hola',
     messageContextInfo: MessageContextInfo {
       deviceListMetadata: [DeviceListMetadata],
       deviceListMetadataVersion: 2
     }
   },
-  body: '4',
+  body: 'Hola',
+  from: '56936499908'
+}
+[QUEUE_SE_ENVIO]:  {
+  ref: 'ans_951cb04a-dc84-46d9-ab34-b87a536373df',
+  keyword: 'key_1c56af86-86cf-48fd-bda4-ae50ff076a7e',
+  answer: '__call_action__',
+  options: {
+    media: null,
+    buttons: [],
+    capture: false,
+    child: null,
+    delay: 0,
+    idle: null,
+    nested: [],
+    keyword: {},
+    callback: true
+  },
+  refSerialize: '61931af9e09ccdba2ec5e9b43b209f08'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '56936499908@s.whatsapp.net',
+    fromMe: false,
+    id: 'EF2CC019A589E96B8359D53BD4A23046',
+    participant: undefined
+  },
+  messageTimestamp: 1696461957,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '1',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '1',
   from: '56936499908'
 }

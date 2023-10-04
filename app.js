@@ -24,8 +24,14 @@ const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
         'Ingrese su direccion con la siguiente estructura:\n',
         '*Nombre Calle Numeracion, Comuna, Dto/Bloque/Lote Referencia*\n',
     ],
-    { capture: true},
+    { capture: true,  delay: 1000, idle: 960000 },
     async(ctx, {flowDynamic, endFlow, provider}) => {
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+
         if (ctx.body.length > 0) {
             await flowDynamic(await service.saveOrder(ctx, provider))
             service.cleanData(ctx);
@@ -43,9 +49,14 @@ const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
         '👉 #2  Cancelar Compra',
         '👉 #0  Menu principal\n', 
     ],
-     { capture: true},
-     async(ctx, {flowDynamic, fallBack, endFlow, gotoFlow}) => {
-        console.log(' flowLisSelectProducts llego por aca')
+    { capture: true,  delay: 1000, idle: 960000 },
+    async(ctx, {flowDynamic, fallBack, endFlow, gotoFlow}) => {
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+
         if (ctx.body == 0) {
            return  await gotoFlow(flowPrincipal);
         }
@@ -83,8 +94,14 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         '👉 #3  Eliminar Productos', 
         '👉 #0  Menu principal\n',
     ],
-    { capture: true },
+    { capture: true,  delay: 1000, idle: 960000 },
      async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow}) => {
+            if (ctx?.idleFallBack) {
+                service.cleanData(ctx);
+                return await endFlow({
+                    body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+            }
+
             if (ctx.body == 0) { await gotoFlow(flowPrincipal) }
 
             if (ctx.body == 1) { 
@@ -119,8 +136,14 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         '👉 #4  Cancelar Compra', 
         '👉 #0  Menu principal\n',
     ],
-    { capture: true},
+    { capture: true,  delay: 1000, idle: 960000 },
     async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+
         if (ctx.body == 0) {
             return await gotoFlow(flowPrincipal);
         }
@@ -144,6 +167,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             service.cleanData(ctx);
             return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'});
         }
+
         if (![0, 1, 2, 3].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return fallBack({body: "*Opcion no valida*, por favor ingrese una opcion valida."});
         }
@@ -157,8 +181,14 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         'Ejemplo: 1,3,5',
         'Digite el Numero *0* para ir al menu anterior',
     ],
-    { capture: true},
+    { capture: true,  delay: 1000, idle: 960000 },
     async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+
         if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return await gotoFlow(flowPrincipal)
         }
@@ -186,8 +216,14 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         'Ejemplo: 1,3,5',
         '\nIngrese El Numero *0* para ir al menu anterior',
     ],
-    { capture: true},
+    { capture: true,  delay: 1000, idle: 960000 },
     async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+
         if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return await gotoFlow(flowPrincipal)
         }
@@ -203,9 +239,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
                 await flowDynamic(await service.getPromotion(ctx));
                 return await gotoFlow(flowPromotion);
             }
-            
         }
-
         return fallBack({body: '❌ Debe indicar el codigo del producto que desea eliminar con una estructura valida Ejemplo 1,2,3'});
      },
  );
@@ -218,9 +252,14 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         'Ejemplo: 1:2,2:1,3:4',
         '\nIngrese el Numero *0* para ir a la lista de categorias',
     ],
-    { capture: true},
-    async(ctx, {gotoFlow, flowDynamic, fallBack}) => {
-        
+    { capture: true,  delay: 1000, idle: 960000 },
+    async(ctx, {gotoFlow, flowDynamic, fallBack, endFlow}) => {
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+
         if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             await flowDynamic(await service.category(ctx));
             return await gotoFlow(flowCategory);
@@ -231,11 +270,11 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
             console.log('validacion categorias ', valid)
             return fallBack({body: '❌ Debe indicar el numero de producto y cantidad con una estructura valida Ejemplo 1:3,2:4'});
         }
+
         if (!valid) {
             await flowDynamic(await service.addproducts(ctx));
             return await gotoFlow(flowValidSelectProd);
         } 
-        
      }
     )
  
@@ -243,10 +282,18 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
  const flowCategory = addKeyword(['Categoria', 'Categorias', 'categoria', 'CATEGORIA'])
  .addAnswer(
     ['Ingrese la categoria'],
-    { capture: true },
-    async (ctx,{flowDynamic, gotoFlow, fallBack}) => {
+    { capture: true,  delay: 1000, idle: 960000 },
+    async (ctx,{flowDynamic, gotoFlow, fallBack, endFlow}) => {
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+
         if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
+
         const validCategory = await service.validSelectCategory(ctx);
+
         if (validCategory) {
             return fallBack({body: "*Opcion no valida*, \nPor favor seleccione una opcion valida."});
         } else {
@@ -262,8 +309,14 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         '*Indique el numero de las Promociones que desee y la cantidad separadas por coma Ejemplo: 1:2,3:2*\n', 
         'Indique Numero *0* para ir al menu principal',
     ],
-     { capture: true},
-     async (ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+    // { capture: true,  delay: 1000, idle: 960000 },
+    { capture: true},
+    async (ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+        // if (ctx?.idleFallBack) {
+        //     service.cleanData(ctx);
+        //     return await endFlow({
+        //         body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        // }
         if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return await gotoFlow(flowPrincipal)
         }
@@ -290,7 +343,7 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
         '👉 #3  Cancelar Compra',
         '👉 #0  Menu principal\n',  
     ],
-    { capture: true },
+    { capture: true,  delay: 1000, idle: 960000 },
      async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow}) => {
         console.log('llego por aca flowValidSelectPromotion')
             if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
@@ -309,6 +362,13 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
                 service.cleanData(ctx);
                 return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) 
             }
+
+            if (ctx?.idleFallBack) {
+                service.cleanData(ctx);
+                return await endFlow({
+                    body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+            }
+
             if (![0, 1, 2].includes(parseInt(ctx.body.toLowerCase().trim()))) {
                 return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
             }
@@ -389,9 +449,10 @@ const flowDisable = addKeyword("disable")
        '👉 #1 Facebook', 
        '👉 #2 Instagram', 
        '👉 #3 TicTok'
-   ],
-   { capture: true },
+    ],
+    { capture: true,  delay: 1000, idle: 960000 },
     async (ctx,{ endFlow, fallBack}) => {
+        // { capture: true, delay: 1000, idle: 2000 },
         if (ctx.body === "1") {
            return await endFlow({
             body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Facebook\n 🔗 https://www.facebook.com/profile.php?id=61550250449208 \n*Gracias*'});
@@ -404,6 +465,12 @@ const flowDisable = addKeyword("disable")
             return await endFlow({
             body: 'En el siguiente Link tendras la opcion de ver Nuestro TikTok\n 🔗 https://vm.tiktok.com/ZMjkbTYBg/ \n*Gracias*'});
         } 
+
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
 
         if (![1, 2, 3].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return fallBack({body: "*Opcion no valida*, \nPor favor seleccione una opcion valida."});
@@ -430,20 +497,31 @@ const flowPrincipal = addKeyword("welcome")
         '👉 #3 Carrito de compra whatsApp',
         '👉 #4 Conversar con un Agente'
     ],
+    // { capture: true,  delay: 1000, idle: 960000 },
     { capture: true },
-     async (ctx,{gotoFlow, flowDynamic, fallBack, provider}) => {
-         globalState.update(ctx.from, { name: ctx.pushName ?? ctx.from });
-        //  console.log('provider read', ctx.message)
+     async (ctx,{gotoFlow, flowDynamic, fallBack,endFlow, provider}) => {
+        globalState.update(ctx.from, { name: ctx.pushName ?? ctx.from });
+         console.log('provider read', ctx)
+
+        if (ctx?.idleFallBack) {
+            console.log('ctx?.idleFallBack', ctx?.idleFallBack)
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+         
         //  await service.messageRead(ctx, provider)
        
         if (ctx.body === "1") {
+            console.log('getPromotion')
             await flowDynamic(await service.getPromotion(ctx));
             return await gotoFlow(flowPromotion); 
         }
-         if (ctx.body === "3") {
+        if (ctx.body === "3") {
             await flowDynamic(await service.category(ctx));
             return await gotoFlow(flowCategory);
-         }
+        }
+
         if (![1, 2, 3, 4].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return fallBack({body: "*Opcion no valida*, \nPor favor seleccione una opcion valida."});
         }

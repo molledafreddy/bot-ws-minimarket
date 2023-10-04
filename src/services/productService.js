@@ -395,6 +395,7 @@ const saveOrder = async (ctx, provider)  => {
 const getPromotion = async (ctx)  => {
 
     const products = await getProducts("64adedb4035179d0b5492fe1", "promotion");
+    
     let data= [];
     // data.push("Promociones Disponibles");
     let counter = 1
@@ -436,7 +437,7 @@ const getPromotion = async (ctx)  => {
     });
     
     const prod = {body: `${data}`};
-
+    console.log('prod', prod)
     return prod;
 }
 
