@@ -436,7 +436,7 @@ const getPromotion = async (ctx)  => {
     });
     
     const prod = {body: `${data}`};
-
+    // console.log('prod', prod)
     return prod;
 }
 

@@ -437,13 +437,34 @@ const flowPrincipal = addKeyword("welcome")
         //  await service.messageRead(ctx, provider)
        
         if (ctx.body === "1") {
-            await flowDynamic(await service.getPromotion(ctx));
+            // await flowDynamic([
+            //     {
+            //         body: '\n' +
+            //           ' 👉# 1: *Promoción Fiesta* Papas fritas corte americano 230 gr, Pepsi 2L, Doritos 200gr. Precio:6.000\n' +
+            //           ',\n' +
+            //           ' 👉# 2: *Promoción Desayuno* Pan blanco de molde 750gr, Riquesa (cheddar fundido),  Fiambre Sandwich 250gr Precio:8.000\n' +
+            //           ',\n' +
+            //           ' 👉# 3: *Promoción Hamburguesas* Pan 8un, mayonesa 186 gr, ketchups 397 gr, moztaza 100gr, Carne 8un Precio:8.500\n' +
+            //           ',\n' +
+            //           ' 👉# 4: *Promocion Arepas* Harina Pan 1k, Queso llanero 250 gr, Mantequilla deline 500 gr, Jamon Fiambre 250 gr Precio:7.500\n' +
+            //           ',\n' +
+            //           ' 👉# 5: *Promocion Combo Perros Calientes* Mayonesa 100 gr, Kétchup 100 gr, moztaza 100 gr, Papas Hilo, Pan Perro 10 Un, Paquete vianesas 20 Un Precio:10.000\n' +
+            //           ',\n' +
+            //           ' 👉# 6: *Promocion Completos* Pan 10 un, Mayo 100 gr, moztaza 100gr, Palta 300 gr Precio:5.500\n'
+            //       }
+            // ])
+            const data = await service.getPromotion(ctx)
+            console.log('getPromotion', data)
+            await flowDynamic([data]);
+            console.log('paso el flowDynamy')
             return await gotoFlow(flowPromotion); 
         }
-         if (ctx.body === "3") {
+        
+        if (ctx.body === "3") {
             await flowDynamic(await service.category(ctx));
             return await gotoFlow(flowCategory);
-         }
+        }
+        
         if (![1, 2, 3, 4].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return fallBack({body: "*Opcion no valida*, \nPor favor seleccione una opcion valida."});
         }
