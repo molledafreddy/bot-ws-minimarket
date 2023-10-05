@@ -101,7 +101,7 @@ const category = async (ctx)  => {
         });
 
         data.push(`\n 👉#: 0 Volver al menu Principal`);
-        const cat = {body: `${data}`}
+        const cat = [{body: `${data}`}]
         return cat;
 }
 
@@ -127,10 +127,10 @@ const addproducts = async (ctx)  => {
             contaninerProductosGlobal?.forEach(elementP => {
 
                 if (element.numberProduct == elementP.counter && globalState.get(ctx.from)?.categorySelectActive.id == elementP.category) {
-                    console.log('element.numberProductGlobal',element.numberProduct)
-                    console.log('elementP.counterGlobal',elementP.counter)
-                    console.log('categorySelectActive.idGlobal',globalState.get(ctx.from)?.categorySelectActive.id)
-                    console.log('elementP.categoryGlobal',elementP.category)
+                    // console.log('element.numberProductGlobal',element.numberProduct)
+                    // console.log('elementP.counterGlobal',elementP.counter)
+                    // console.log('categorySelectActive.idGlobal',globalState.get(ctx.from)?.categorySelectActive.id)
+                    // console.log('elementP.categoryGlobal',elementP.category)
                     elementP.quantity = element.quantity;
                     elementP.status = true;
                 }
@@ -375,13 +375,13 @@ const saveOrder = async (ctx, provider)  => {
         console.log('dataProductsGlobal', dataProductsGlobal)
         postDelivery(dataProductsGlobal);
     
-        dataGlobal.push(`🥳 🛒Su pedido fue Exitoso, sera contactado por un operador para validar la informacion suministrada 🛒 🥳`);
+        dataGlobal.push(`🥳 🛒Su pedido fue Exitoso, sera contactado por un Agente para validar la informacion suministrada 🛒 🥳`);
         dataGlobal.push(`Si requiere realizar un cambio del pedido lo podra hacer cuando se comunique con el Agente.`);
-        // await provider.sendText('56926070900@s.whatsapp.net', dataMessageGlobal.toString());
+        await provider.sendText('56926070900@s.whatsapp.net', dataMessageGlobal.toString());
         await provider.sendText('56936499908@s.whatsapp.net', dataMessageGlobal.toString());
         
         await cleanData(ctx);
-        return {body: `${dataGlobal}`}
+        return [{body: `${dataGlobal}`}]
     } catch (error) {
         console.log('error', error)
     }
@@ -436,7 +436,7 @@ const getPromotion = async (ctx)  => {
         lastContainerPromotions: lastContainerPromotionsGlobal
     });
     
-    const prod = {body: `${data}`};
+    const prod = [{body: `${data}`}];
     console.log('prod', prod)
     return prod;
 }
@@ -493,7 +493,7 @@ const product = async (ctx)  => {
                 contaninerProductos: contaninerProductosGlobal,
                 lastContainerProducts: lastContainerProductsGlobal
             });
-            const prodGlobal = {body: `${dataGlobal}`}
+            const prodGlobal = [{body: `${dataGlobal}`}]
             return prodGlobal;
     }
 }
@@ -528,7 +528,7 @@ const listProductSelected = async (ctx)  => {
     const dollarG = formatter.format(sumProductsGlobal);
     dataGlobal.push(`\nTotal a Pagar: ${dollarG}`)
     // dataGlobal = `Total a Pagar: ${dollarG}`;
-    return {body: `${dataGlobal}`}
+    return [{body: `${dataGlobal}`}]
 }
 
 /**
@@ -547,7 +547,7 @@ const listProductPreSelected = async (selected)  => {
         counter++;
     });
     
-    return {body: `${data}`}
+    return [{body: `${data}`}]
 }
 
 module.exports = { cleanData, messageRead, validListProducts, validSelectProductDelete, deleteProducts, listProductPreSelected, listProductSelected, product, getPromotion, saveOrder, validSelectProducts, validSelectCategory, postDelivery, getCategory, category, addproducts, validSelectPromotion, addPromotions }

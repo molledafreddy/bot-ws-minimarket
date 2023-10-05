@@ -399,7 +399,7 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
     const message = `El cliente ${name} con el celular ${numAgente} solicita atencion mas personalizada`;
     const refProvider = await provider.getInstance();
     await provider.sendText('56936499908@s.whatsapp.net', message)
-    // await provider.sendText('56926070900@s.whatsapp.net', message)
+    await provider.sendText('56926070900@s.whatsapp.net', message)
     service.cleanData(ctx);
        return endFlow({body: '*Gracias*'});
    }
