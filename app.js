@@ -18,14 +18,20 @@ require("dotenv").config();
 const MONGO_DB_URI = "mongodb+srv://molledafreddy:freddy2..@cluster0.1e16p.mongodb.net";
 const MONGO_DB_NAME = 'db_bot';
 
-const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
+// EVENTS.LOCATION
+const flowEndShoppingCart = addKeyword('direccion')
  .addAnswer(
     [
         'Ingrese su direccion con la siguiente estructura:\n',
         '*Nombre Calle Numeracion, Comuna, Dto/Bloque/Lote Referencia*\n',
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
+    { capture: true,  delay: 3000, idle: 960000 },
     async(ctx, {flowDynamic, endFlow, provider}) => {
+
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
             return await endFlow({
@@ -49,8 +55,13 @@ const flowEndShoppingCart = addKeyword(EVENTS.LOCATION)
         '👉 #2  Cancelar Compra',
         '👉 #0  Menu principal\n', 
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
-    async(ctx, {flowDynamic, fallBack, endFlow, gotoFlow}) => {
+    { capture: true,  delay: 2000, idle: 960000 },
+    async(ctx, {flowDynamic, fallBack, endFlow, gotoFlow, provider}) => {
+
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
             return await endFlow({
@@ -94,8 +105,13 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         '👉 #3  Eliminar Productos', 
         '👉 #0  Menu principal\n',
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
-     async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow}) => {
+    { capture: true,  delay: 2000, idle: 960000 },
+     async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow, provider}) => {
+
+            const refProvider = await provider.getInstance();
+            await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+            await refProvider.readMessages([ctx?.key]);
+
             if (ctx?.idleFallBack) {
                 service.cleanData(ctx);
                 return await endFlow({
@@ -136,8 +152,13 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         '👉 #4  Cancelar Compra', 
         '👉 #0  Menu principal\n',
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
-    async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+    { capture: true,  delay: 2000, idle: 960000 },
+    async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack, provider}) => {
+
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
             return await endFlow({
@@ -181,8 +202,13 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         'Ejemplo: 1,3,5',
         'Digite el Numero *0* para ir al menu anterior',
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
-    async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+    { capture: true,  delay: 2000, idle: 960000 },
+    async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack, provider}) => {
+
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
             return await endFlow({
@@ -216,8 +242,13 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         'Ejemplo: 1,3,5',
         '\nIngrese El Numero *0* para ir al menu anterior',
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
-    async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
+    { capture: true,  delay: 2000, idle: 960000 },
+    async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack, provider}) => {
+
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
             return await endFlow({
@@ -252,8 +283,13 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         'Ejemplo: 1:2,2:1,3:4',
         '\nIngrese el Numero *0* para ir a la lista de categorias',
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
-    async(ctx, {gotoFlow, flowDynamic, fallBack, endFlow}) => {
+    { capture: true,  delay: 2000, idle: 960000 },
+    async(ctx, {gotoFlow, flowDynamic, fallBack, endFlow, provider}) => {
+
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
             return await endFlow({
@@ -282,8 +318,13 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
  const flowCategory = addKeyword(['Categoria', 'Categorias', 'categoria', 'CATEGORIA'])
  .addAnswer(
     ['Ingrese la categoria'],
-    { capture: true,  delay: 1000, idle: 960000 },
-    async (ctx,{flowDynamic, gotoFlow, fallBack, endFlow}) => {
+    { capture: true,  delay: 2000, idle: 960000 },
+    async (ctx,{flowDynamic, gotoFlow, fallBack, endFlow, provider}) => {
+
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
             return await endFlow({
@@ -302,21 +343,25 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
         }
     },
 );
-
- const flowPromotion = addKeyword(['1', 'Promociones', 'Promocion', 'promociones', 'promocion'])
+// , 'Promociones', 'Promocion', 'promociones', 'promocion'
+ const flowPromotion = addKeyword(['Promociones'])
  .addAnswer(
     [
         '*Indique el numero de las Promociones que desee y la cantidad separadas por coma Ejemplo: 1:2,3:2*\n', 
         'Indique Numero *0* para ir al menu principal',
     ],
-    // { capture: true,  delay: 1000, idle: 960000 },
-    { capture: true},
-    async (ctx, {gotoFlow, flowDynamic, endFlow, fallBack}) => {
-        // if (ctx?.idleFallBack) {
-        //     service.cleanData(ctx);
-        //     return await endFlow({
-        //         body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
-        // }
+    { capture: true,  delay: 2000, idle: 960000 },
+    async (ctx, {gotoFlow, flowDynamic, endFlow, fallBack, provider}) => {
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+        
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
+
         if ([0].includes(parseInt(ctx.body.toLowerCase().trim()))) {
             return await gotoFlow(flowPrincipal)
         }
@@ -343,35 +388,37 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
         '👉 #3  Cancelar Compra',
         '👉 #0  Menu principal\n',  
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
-     async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow}) => {
-        console.log('llego por aca flowValidSelectPromotion')
-            if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
+    { capture: true,  delay: 2000, idle: 960000 },
+     async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow, provider}) => {
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+        if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
 
-            if (ctx.body == 1) { 
-                await flowDynamic(await service.listProductSelected(ctx));
-                return await gotoFlow(flowLisSelectProducts);
-            }
+        if (ctx.body == 1) { 
+            await flowDynamic(await service.listProductSelected(ctx));
+            return await gotoFlow(flowLisSelectProducts);
+        }
 
-            if (ctx.body == 2) { 
-                await flowDynamic(await service.listProductSelected(ctx))
-                return await gotoFlow(flowValidPromotionDelete)
-            }
+        if (ctx.body == 2) { 
+            await flowDynamic(await service.listProductSelected(ctx))
+            return await gotoFlow(flowValidPromotionDelete)
+        }
             
-            if(ctx.body == 3){ 
-                service.cleanData(ctx);
-                return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) 
-            }
+        if(ctx.body == 3){ 
+            service.cleanData(ctx);
+            return endFlow({body: '❌ Su solicitud ha sido cancelada, Cuando desee empezar un nuevo proceso de compra ingrese la palabra *Hola*'}) 
+        }
 
-            if (ctx?.idleFallBack) {
-                service.cleanData(ctx);
-                return await endFlow({
-                    body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
-            }
+        if (ctx?.idleFallBack) {
+            service.cleanData(ctx);
+            return await endFlow({
+                body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
+        }
 
-            if (![0, 1, 2].includes(parseInt(ctx.body.toLowerCase().trim()))) {
-                return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
-            }
+        if (![0, 1, 2].includes(parseInt(ctx.body.toLowerCase().trim()))) {
+            return fallBack({body: "*Opcion no valida*, por favor seleccione una opcion valida."});
+        }
          
      },
  );
@@ -398,6 +445,8 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
     const numAgente = ctx.key?.remoteJid;
     const message = `El cliente ${name} con el celular ${numAgente} solicita atencion mas personalizada`;
     const refProvider = await provider.getInstance();
+    await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+    await refProvider.readMessages([ctx?.key]);
     await provider.sendText('56936499908@s.whatsapp.net', message)
     await provider.sendText('56926070900@s.whatsapp.net', message)
     service.cleanData(ctx);
@@ -415,24 +464,67 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
     ],
     null,
      (ctx,{ endFlow }) => {  return endFlow({body: 'Gracias'}); }
- )
+ );
 
- const flowValidTime = addKeyword( EVENTS.WELCOME)
- .addAction(async(ctx,{gotoFlow}) => {
-    const horaActual = moment();
-    let horario = "09:00-24:00"
-    let rangoHorario = horario.split("-");
-    let horaInicio = moment(rangoHorario[0], "HH:mm");
-    let horaFin = moment(rangoHorario[1], "HH:mm");
-    if (horaActual.isBetween(horaInicio, horaFin)) {
-        return await gotoFlow(flowPrincipal); 
-    } else {
-        return await gotoFlow(flowDisable);
+ const flowValidVoice = addKeyword(EVENTS.VOICE_NOTE)
+ .addAction(async(ctx,{gotoFlow, fallBack}) => {
+    try {
+        console.log('ctx', ctx?.message)
+        if (ctx.message.hasOwnProperty('imageMessage')) {
+            return fallBack({
+                body: "❌  *Opcion no Valida*\n\n Por ahora solo es permitido enviar texto."
+            });
+        }  
+    } catch (error) {
+        console.log('error MEdia', error)
     }
 });
 
 
+/**
+* captura una variedad de eventos que no son permitidos por el bot para enviar un mensaje correspondiente al caso.
+*/
+ const flowValidMedia = addKeyword([EVENTS.MEDIA, EVENTS.VOICE_NOTE, EVENTS.LOCATION, EVENTS.DOCUMENT])
+ .addAction(async(ctx,{gotoFlow, fallBack}) => {
+    try {
+        if (
+            ctx.message.hasOwnProperty('imageMessage') || 
+            ctx.message.hasOwnProperty('audioMessage') ||
+            ctx.message.hasOwnProperty('locationMessage') ||
+            ctx.message.hasOwnProperty('documentMessage') ) {
+            return fallBack({
+                body: "❌  *Opcion no Valida*\n\n Por ahora solo es permitido enviar texto."
+            });
+        }  
+    } catch (error) {
+        console.log('error Media', error)
+    }
+});
 
+ const flowValidTime = addKeyword(EVENTS.WELCOME)
+ .addAction(async(ctx,{gotoFlow, provider}) => {
+     try {
+        
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+
+        const horaActual = moment();
+        let horario = "09:00-24:00"
+        let rangoHorario = horario.split("-");
+        let horaInicio = moment(rangoHorario[0], "HH:mm");
+        let horaFin = moment(rangoHorario[1], "HH:mm");
+        if (horaActual.isBetween(horaInicio, horaFin)) {
+            return await gotoFlow(flowPrincipal); 
+        } else {
+            return await gotoFlow(flowDisable);
+        }
+
+    } catch (error) {
+        console.log('error', error)
+    }
+    
+});
 
  /**
 * Declarando flujo principal
@@ -440,8 +532,7 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
 const flowDisable = addKeyword("disable")
 .addAnswer([
    '🏜️ Hola, Bienvenido a *Minimarket Los Medanos* 🌵', 
-   '⌛ Nuestra disponibilidad para atenderte esta desde las 09:00 AM hasta las 10:00 PM. ⌛',
-   
+   '⌛ Nuestra disponibilidad para atenderte esta desde las 09:00 AM hasta las 10:00 PM. ⌛'
 ])
 .addAnswer(
     [
@@ -450,13 +541,18 @@ const flowDisable = addKeyword("disable")
        '👉 #2 Instagram', 
        '👉 #3 TicTok'
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
-    async (ctx,{ endFlow, fallBack}) => {
-        // { capture: true, delay: 1000, idle: 2000 },
+    { capture: true,  delay: 2000, idle: 960000 },
+    async (ctx,{ endFlow, fallBack, provider}) => {
+        
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
+        
         if (ctx.body === "1") {
            return await endFlow({
             body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Facebook\n 🔗 https://www.facebook.com/profile.php?id=61550250449208 \n*Gracias*'});
         }
+        
         if (ctx.body === "2") {
             return await endFlow({
             body: 'En el siguiente Link tendras la opcion de ver Nuestra Pagina de Instagram\n 🔗 https://instagram.com/minimarketlosmedanos?igshid=YTQwZjQ0NmI0OA== \n*Gracias*'});
@@ -497,19 +593,19 @@ const flowPrincipal = addKeyword("welcome")
         '👉 #3 Carrito de compra whatsApp',
         '👉 #4 Conversar con un Agente'
     ],
-    { capture: true,  delay: 1000, idle: 960000 },
+    { capture: true,  delay: 4000, idle: 960000 },
     async (ctx,{gotoFlow, flowDynamic, fallBack,endFlow, provider}) => {
+        const refProvider = await provider.getInstance();
+        await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+        await refProvider.readMessages([ctx?.key]);
         globalState.update(ctx.from, { name: ctx.pushName ?? ctx.from });
-         console.log('provider read', ctx)
-
+        
         if (ctx?.idleFallBack) {
             console.log('ctx?.idleFallBack', ctx?.idleFallBack)
             service.cleanData(ctx);
             return await endFlow({
                 body: '❌  *Finalizado por inactividad*\n\n Para iniciar el proceso de compra debe Escribir la palabra: *Hola* \n\n*Gracias por Comunicarte*'});
         }
-         
-        //  await service.messageRead(ctx, provider)
        
         if (ctx.body === "1") {
             console.log('getPromotion')
@@ -549,6 +645,7 @@ const main = async () => {
         flowValidPromotionDelete,
         flowValidProductDelete,
         flowPromotion,
+        flowValidMedia
     ]);
     
     const adapterProvider = createProvider(BaileysProvider)
