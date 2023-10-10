@@ -2,10 +2,10 @@
   key: {
     remoteJid: '56936499908@s.whatsapp.net',
     fromMe: false,
-    id: 'D7721DB7BD0CEEBE599AA717B5D620D7',
+    id: 'B34BAADD0944F100C46259103A6A418C',
     participant: undefined
   },
-  messageTimestamp: 1696631944,
+  messageTimestamp: 1696945150,
   pushName: 'Freddy',
   broadcast: false,
   message: Message {
@@ -19,8 +19,8 @@
   from: '56936499908'
 }
 [QUEUE_SE_ENVIO]:  {
-  ref: 'ans_90e99d6b-b219-4204-bcee-c545982856a0',
-  keyword: 'key_02314f50-cb0b-41ba-b9dd-e2534a8e0a00',
+  ref: 'ans_c7323da5-73f0-43e4-8990-003e9b9a4a1a',
+  keyword: 'key_e7fa5037-a593-4ed5-8c95-2da68418f7ad',
   answer: '__call_action__',
   options: {
     media: null,
@@ -33,5 +33,42 @@
     keyword: {},
     callback: true
   },
-  refSerialize: 'a11b3d0d10e45dc528e97e2756be4a67'
+  refSerialize: '75d04b69e54a8eb98dda47cd62bea3b1'
+}
+[handleMsg]:  {
+  key: {
+    remoteJid: '56936499908@s.whatsapp.net',
+    fromMe: false,
+    id: '579850C357806452C894D7398F6C34E6',
+    participant: undefined
+  },
+  messageTimestamp: 1696945156,
+  pushName: 'Freddy',
+  broadcast: false,
+  message: Message {
+    conversation: '4',
+    messageContextInfo: MessageContextInfo {
+      deviceListMetadata: [DeviceListMetadata],
+      deviceListMetadataVersion: 2
+    }
+  },
+  body: '4',
+  from: '56936499908'
+}
+[QUEUE_SE_ENVIO]:  {
+  ref: 'ans_cd88725c-2a94-4701-bb26-2b0116299e02',
+  keyword: 'key_8bedec26-a866-4449-945f-8299c1c204e7',
+  answer: '*Estamos desviando tu conversacion a nuestro Agente*',
+  options: {
+    media: null,
+    buttons: [],
+    capture: false,
+    child: null,
+    delay: 0,
+    idle: null,
+    nested: [],
+    keyword: {},
+    callback: true
+  },
+  refSerialize: 'e28fd862ae0bdc9087b0809dbaccbc79'
 }

@@ -18,7 +18,6 @@ require("dotenv").config();
 const MONGO_DB_URI = "mongodb+srv://molledafreddy:freddy2..@cluster0.1e16p.mongodb.net";
 const MONGO_DB_NAME = 'db_bot';
 
-// EVENTS.LOCATION
 const flowEndShoppingCart = addKeyword('direccion')
  .addAnswer(
     [
@@ -30,7 +29,7 @@ const flowEndShoppingCart = addKeyword('direccion')
 
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
 
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
@@ -60,7 +59,7 @@ const flowEndShoppingCart = addKeyword('direccion')
 
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
 
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
@@ -110,7 +109,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
 
             const refProvider = await provider.getInstance();
             await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-            await refProvider.readMessages([ctx?.key]);
+            // await refProvider.readMessages([ctx?.key]);
 
             if (ctx?.idleFallBack) {
                 service.cleanData(ctx);
@@ -157,7 +156,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
 
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
 
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
@@ -207,7 +206,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
 
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
 
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
@@ -247,7 +246,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
 
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
 
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
@@ -288,7 +287,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
 
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
 
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
@@ -323,7 +322,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
 
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
 
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
@@ -354,7 +353,7 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
     async (ctx, {gotoFlow, flowDynamic, endFlow, fallBack, provider}) => {
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
         
         if (ctx?.idleFallBack) {
             service.cleanData(ctx);
@@ -392,7 +391,7 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
      async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow, provider}) => {
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
         if (ctx.body == 0) { return await gotoFlow(flowPrincipal) }
 
         if (ctx.body == 1) { 
@@ -441,12 +440,13 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
 .addAnswer(["*Estamos desviando tu conversacion a nuestro Agente*"], null,
    async(ctx, {provider, endFlow}) => {
     STATUS = false;
-    const name = ctx.pushName;
-    const numAgente = ctx.key?.remoteJid;
-    const message = `El cliente ${name} con el celular ${numAgente} solicita atencion mas personalizada`;
+    console.log('datos', ctx?.from)
+    const name = ctx?.pushName;
+    const numAgente = ctx?.from;
+    const message = `El cliente ${name} con el celular ${numAgente} solicita atencion personalizada`;
     const refProvider = await provider.getInstance();
     await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-    await refProvider.readMessages([ctx?.key]);
+    // await refProvider.readMessages([ctx?.key]);
     await provider.sendText('56936499908@s.whatsapp.net', message)
     await provider.sendText('56926070900@s.whatsapp.net', message)
     service.cleanData(ctx);
@@ -504,10 +504,9 @@ const FlowAgente2 = addKeyword(['4', 'Agente', 'AGENTE'])
  const flowValidTime = addKeyword(EVENTS.WELCOME)
  .addAction(async(ctx,{gotoFlow, provider}) => {
      try {
-        
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
 
         const horaActual = moment();
         let horario = "09:00-24:00"
@@ -546,7 +545,7 @@ const flowDisable = addKeyword("disable")
         
         const refProvider = await provider.getInstance();
         await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        await refProvider.readMessages([ctx?.key]);
+        // await refProvider.readMessages([ctx?.key]);
         
         if (ctx.body === "1") {
            return await endFlow({
