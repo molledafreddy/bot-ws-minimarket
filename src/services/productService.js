@@ -405,7 +405,7 @@ const getPromotion = async (ctx)  => {
         lastContainerPromotions: []
     });
     products?.data.forEach(c => {
-        let value =`\n 👉# ${counter}: *${c.name}* ${c.description} Precio:${c.price}\n`
+        let value =`\n 👉 ${counter}: *${c.name}* ${c.description} Precio:${c.price}\n`
         data.push(value)
         lastContainerPromotionsGlobal.push(counter)
         let result = contaninerProductosGlobal.findIndex(elementP => {
@@ -463,7 +463,7 @@ const product = async (ctx)  => {
             dataGlobal.push("\nIndique el numero de producto de su interes:");
             let counterGlobal = 1;
             products.data.forEach(c => {
-                let valueGlobal =`\n 👉#: ${counterGlobal} ${c.name} Precio:${c.price}`
+                let valueGlobal =`\n 👉 ${counterGlobal}: ${c.name} Precio:${c.price}`
                 dataGlobal.push(valueGlobal)
                 lastContainerProductsGlobal.push(counterGlobal);
                 let result = contaninerProductosGlobal.findIndex(elementP => {
@@ -511,7 +511,7 @@ const listProductSelected = async (ctx)  => {
     let contaninerProductosGlobal = globalState.get(ctx.from)?.contaninerProductos ?? [];
     contaninerProductosGlobal.forEach(c => {
         if (c.quantity != 0) {
-            let valueG =`👉 #:${counterGlobal} Nombre: ${c.name} Cantidad:${c.quantity}  Precio:${c.price}\n`
+            let valueG =`👉 ${counterGlobal}: Nombre: ${c.name} Cantidad:${c.quantity}  Precio:${c.price}\n`
             dataGlobal.push(valueG)
             sumProductsGlobal =  ( parseFloat(sumProductsGlobal) + (parseFloat(c.price) * parseFloat(c.quantity)))
         }
@@ -540,7 +540,7 @@ const listProductPreSelected = async (selected)  => {
     let counter = 1
     contaninerProductos.forEach(c => {
         if (c.quantity == 0 && c.status) {
-            let value =`👉:#${counter} ${c.name}  Precio:${c.price}\n`
+            let value =`👉 ${counter}: ${c.name}  Precio:${c.price}\n`
             data.push(value)
         }
         value = '';
