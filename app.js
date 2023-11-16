@@ -50,9 +50,9 @@ const flowEndShoppingCart = addKeyword('direccion')
  .addAnswer(
     [
         '*Opciones disponibles para avanzar:*\n',
-        '👉 #1  Concretar Compra',
-        '👉 #2  Cancelar Compra',
-        '👉 #0  Menu principal\n', 
+        '👉 1  Concretar Compra',
+        '👉 2  Cancelar Compra',
+        '👉 0  Menu principal\n', 
     ],
     { capture: true,  delay: 2000, idle: 960000 },
     async(ctx, {flowDynamic, fallBack, endFlow, gotoFlow, provider}) => {
@@ -99,10 +99,10 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
  .addAnswer(
     [
         '*Procesamos su seleccion, indique El numero de su siguiente paso:*\n',
-        '👉 #1  Resumen y Finalizar Compra', 
-        '👉 #2  Cancelar Compra',
-        '👉 #3  Eliminar Productos', 
-        '👉 #0  Menu principal\n',
+        '👉 1  Resumen y Finalizar Compra', 
+        '👉 2  Cancelar Compra',
+        '👉 3  Eliminar Productos', 
+        '👉 0  Menu principal\n',
     ],
     { capture: true,  delay: 2000, idle: 960000 },
      async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow, provider}) => {
@@ -145,11 +145,11 @@ const flowValidSelectPromotion = addKeyword(EVENTS.WELCOME)
  .addAnswer(
     [
         '*Procesamos su seleccion, indique El numero de su siguiente paso:*\n',
-        '👉 #1  Resumen y Finalizar Compra', 
-        '👉 #2  Categorias',
-        '👉 #3  Eliminar Productos',
-        '👉 #4  Cancelar Compra', 
-        '👉 #0  Menu principal\n',
+        '👉 1  Resumen y Finalizar Compra', 
+        '👉 2  Categorias',
+        '👉 3  Eliminar Productos',
+        '👉 4  Cancelar Compra', 
+        '👉 0  Menu principal\n',
     ],
     { capture: true,  delay: 2000, idle: 960000 },
     async(ctx, {gotoFlow, flowDynamic, endFlow, fallBack, provider}) => {
@@ -382,10 +382,10 @@ const FlowMenuPromocion = addKeyword(['MenuPromocion'])
  .addAnswer(
     [
         '*Seleccione una opcion para avanzar:*\n',
-        '👉 #1  Resumen y Finalizar Compra',
-        '👉 #2  Eliminar Productos', 
-        '👉 #3  Cancelar Compra',
-        '👉 #0  Menu principal\n',  
+        '👉 1  Resumen y Finalizar Compra',
+        '👉 2  Eliminar Productos', 
+        '👉 3  Cancelar Compra',
+        '👉 0  Menu principal\n',  
     ],
     { capture: true,  delay: 2000, idle: 960000 },
      async (ctx,{gotoFlow, flowDynamic, fallBack, endFlow, provider}) => {
@@ -535,10 +535,10 @@ const flowDisable = addKeyword("disable")
 ])
 .addAnswer(
     [
-       '*Pero puedes ver nuestras redes sociales y recuerda que en el horario habilitado Empieza tu pedido escribiendo la palabra Hola*', 
-       '👉 #1 Facebook', 
-       '👉 #2 Instagram', 
-       '👉 #3 TicTok'
+       '*Pero puedes ver nuestras redes sociales y receurda que en el horario habilitado Empieza tu pedido escribiendo la palabra Hola*', 
+       '👉 1 Facebook', 
+       '👉 2 Instagram', 
+       '👉 3 TicTok'
     ],
     { capture: true,  delay: 2000, idle: 960000 },
     async (ctx,{ endFlow, fallBack, provider}) => {
@@ -587,10 +587,10 @@ const flowPrincipal = addKeyword("welcome")
  .addAnswer(
      [
         '*Indica el Número de la opción que desees:*', 
-        '👉 #1 Promociones', 
-        '👉 #2 Link Carrito de compra Web', 
-        '👉 #3 Carrito de compra whatsApp',
-        '👉 #4 Conversar con un Agente'
+        '👉 1 Promociones', 
+        '👉 2 Link Carrito de compra Web', 
+        '👉 3 Carrito de compra whatsApp',
+        '👉 4 Conversar con un Agente'
     ],
     { capture: true,  delay: 4000, idle: 960000 },
     async (ctx,{gotoFlow, flowDynamic, fallBack,endFlow, provider}) => {
