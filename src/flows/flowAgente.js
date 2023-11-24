@@ -1,22 +1,22 @@
-const { addKeyword, addAnswer, addAction } = require('@bot-whatsapp/bot')
+const { addKeyword } = require('@bot-whatsapp/bot')
 
 
 const FlowAgente = addKeyword(['4', 'Agente', 'AGENTE'])
-.addAnswer(["*Estamos desviando tu conversacion a nuestro agente*"], null,
+.addAnswer(["*Estamos desviando tu conversacion a nuestro Agente*"], null,
    async(ctx, {provider, endFlow}) => {
-    console.log('ctx', ctx.key?.remoteJid)
-    //    const nanoid = await required('nanoid')
-    //    const ID_GROUP = nanoid.nanoid(5)
-    STATUS = false;
-    const name = ctx.pushName;
-    const numAgente = ctx.key?.remoteJid;
-    const message = `El cliente ${name} con el celular ${numAgente} solicita atencion mas personalizada`;
-    // const message = `El cliente  con el celular  solicita atencion mas personalizada`;
+    // STATUS = false;
+    // console.log('datos', ctx?.from)
+    const name = ctx?.pushName;
+    const numAgente = ctx?.from;
+    const message = `El cliente ${name} con el celular ${numAgente} solicita atencion personalizada`;
     const refProvider = await provider.getInstance();
-    // await refProvider.sendMessage(numAgente, {Text: message});
-    provider.sendText('56936499908@s.whatsapp.net', message)
-       service.cleanData();
-       return endFlow({body: '*Gracias*'});
+    await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
+    // await refProvider.readMessages([ctx?.key]);
+    await provider.sendText('56936499908@s.whatsapp.net', message)
+    // await provider.sendText('56926070900@s.whatsapp.net', message)
+    service.cleanData(ctx);
+    return endFlow({body: '*Gracias*'});
+
    }
 );
 
