@@ -4,9 +4,6 @@ require("dotenv").config();
 const globalState = require('../../state/globalState');
 
 const URL = process.env.URL;
-const limit = 5
-const page = 1;
-const search = '';
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDYyYmQ4M2E2MzY3YTdkMTkxZDEyYTMiLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE2ODY2MTYwNDgsImV4cCI6MTY4NjYyMzI0OH0.79tnt-lxT7jxBPCvMGTqFA16BWDYZZR3YEA1GosqUgc'
 
 
@@ -15,11 +12,6 @@ const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDYyYmQ4M2E2MzY3
  */
 const cleanData = async (ctx) => {
     globalState.update(ctx.from, {
-        // contaninerIdCategory: [],
-        // lastContainerProducts:[],
-        // contaninerProductos: [],
-        // categorySelectActive: {},
-        // lastContainerPromotions: [],
         contaninerProductCatalogo: [],
         activeCatalog: null
     });
@@ -72,7 +64,7 @@ const saveOrder = async (ctx, provider)  => {
         let globalcontaninerProductos = globalState.get(ctx.from)?.contaninerProductCatalogo
         await globalcontaninerProductos?.forEach(c => {
             if (c.quantity > 0) {
-                console.log('precio', formatter.format(c.price))
+               
                 dataProductsGlobal.products.push({
                     "_id": null,
                     "name": c.name,
@@ -80,6 +72,7 @@ const saveOrder = async (ctx, provider)  => {
                     "category": null,
                     "quantity": c.quantity
                 });
+                
                 dataMessageGlobal.push(` *Nombre:* ${c.name} *Precio: * ${formatter.format(c.price)} *Cantidad:* ${c.quantity} \n`);
                 detail.push(` Nombre: ${c.name} Precio: ${formatter.format(c.price)} Cantidad: ${c.quantity} \n`);
                 sumProductsGlobal =  ( parseFloat(sumProductsGlobal) + (parseFloat(c.price) * parseFloat(c.quantity)))
@@ -91,17 +84,18 @@ const saveOrder = async (ctx, provider)  => {
         dataProductsGlobal.longitude = ctx?.message?.locationMessage?.degreesLongitude;
         dataProductsGlobal.phone = ctx?.from;
         dataProductsGlobal.nameClient = ctx?.pushName;
-        // console.log('dataProductsGlobal', dataProductsGlobal)
         await postDelivery(dataProductsGlobal);
        
         dataGlobal.push(`🥳 🛒Su pedido fue Exitoso, sera contactado por un Agente para validar la informacion suministrada 🛒 🥳`);
         dataGlobal.push(`\n\n*Detalle del Pedido:*\n`);
         dataGlobal.push(detail.toString());
+
         const dollarG = formatter.format(sumProductsGlobal);
         dataGlobal.push(`\n*Total a Pagar: ${dollarG}*`)
         dataGlobal.push(`\n\nSi requiere realizar un cambio del pedido lo podra hacer cuando nuestro Agente se comunique con Usted.`);
         dataMessageGlobal.push(`\n*Total a Pagar: ${dollarG}*`)
-        // await provider.sendText('56926070900@s.whatsapp.net', dataMessageGlobal.toString());
+        
+        await provider.sendText('56926070900@s.whatsapp.net', dataMessageGlobal.toString());
         await provider.sendText('56936499908@s.whatsapp.net', dataMessageGlobal.toString());
         
         await cleanData(ctx);

@@ -13,7 +13,7 @@ RUN npm cache clean --force
 # RUN npm install -g ts-node ts-express
 WORKDIR /app
 COPY package*.json ./
-#RUN npm i
+RUN npm i
 COPY . .
 ARG RAILWAY_STATIC_URL
 ARG PUBLIC_URL
