@@ -89,7 +89,7 @@ const flowAgente = addKeyword(EVENTS.ACTION)
     
     await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
     await provider.sendText('56936499908@s.whatsapp.net', message)
-    await provider.sendText('56926070900@s.whatsapp.net', message)
+    // await provider.sendText('56926070900@s.whatsapp.net', message)
 
     service.cleanData(ctx);
     stopInactividad(ctx);
@@ -154,7 +154,7 @@ const flowValidTime = addKeyword(EVENTS.WELCOME)
             const refProvider = await provider.getInstance();
             await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
             await provider.sendText('56936499908@s.whatsapp.net', message);
-            await provider.sendText('56926070900@s.whatsapp.net', message);
+            // await provider.sendText('56926070900@s.whatsapp.net', message);
             if (activeCatalogo === undefined || activeCatalogo === null) {
                 return await gotoFlow(flowPrincipal); 
             } else {
@@ -312,8 +312,6 @@ const flowAlertPrincipal = addKeyword('flowAlertPrincipal')
     { capture: true },
     async (ctx,{gotoFlow, flowDynamic, fallBack,endFlow, provider}) => {
         const refProvider = await provider.getInstance();
-        // await refProvider.sendPresenceUpdate('recording', ctx?.key?.id); 
-        // await refProvider.readMessages([ctx?.key]);
         const jid = ctx?.key?.remoteJid
         await refProvider.presenceSubscribe(jid)
         await refProvider.sendPresenceUpdate('composing', jid)
@@ -334,8 +332,8 @@ const flowAlertPrincipal = addKeyword('flowAlertPrincipal')
                     renderLargerThumbnail: true, 
                     mediaUrl: 'https://i.postimg.cc/651n2hJh/los-medanos-logo-marca-de-agua.png',
                     thumbnailUrl: 'https://i.postimg.cc/651n2hJh/los-medanos-logo-marca-de-agua.png', //url imagen
-                    sourceUrl: 'https://wa.me/c/56950681466',
-                    // sourceUrl: 'https://wa.me/c/56949079809',
+                    // sourceUrl: 'https://wa.me/c/56950681466',
+                    sourceUrl: 'https://wa.me/c/56949079809',
                     }
                 }
             };

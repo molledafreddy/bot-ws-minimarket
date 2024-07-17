@@ -95,7 +95,7 @@ const saveOrder = async (ctx, provider)  => {
         dataGlobal.push(`\n\nSi requiere realizar un cambio del pedido lo podra hacer cuando nuestro Agente se comunique con Usted.`);
         dataMessageGlobal.push(`\n*Total a Pagar: ${dollarG}*`)
         
-        await provider.sendText('56926070900@s.whatsapp.net', dataMessageGlobal.toString());
+        // await provider.sendText('56926070900@s.whatsapp.net', dataMessageGlobal.toString());
         await provider.sendText('56936499908@s.whatsapp.net', dataMessageGlobal.toString());
         
         await cleanData(ctx);
@@ -127,7 +127,6 @@ const saveOrder = async (ctx, provider)  => {
                     price: element?.price,
                     currency: element?.currency,
                     quantity: element?.quantity
-                    
                 });
             });
 
